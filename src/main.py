@@ -28,7 +28,6 @@ import distributions
 import users
 import animals
 import results
-import exports
 
 api.add_resource(index.Index, '/')
 
