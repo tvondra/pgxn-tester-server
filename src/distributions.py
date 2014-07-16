@@ -134,9 +134,6 @@ class Distribution(Resource):
 		# add info about versions
 		info.update({'versions' : versions})
 
-		# add summary of test results
-		info.update({'summary' : {}})
-
 		return (info)
 
 
