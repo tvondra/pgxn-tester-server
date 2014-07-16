@@ -40,3 +40,4 @@
 * add a link to PGXN (to distribution, version and user)
 * a simple 'status' button, people might put onto their websites or whatever (showing status of their extensions, ...)
 * add BSD license
+* case (in)sensitivity for searches
