@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+				<h1 class="page-header">Users</h1>
+
+				<div class="table-responsive">
+					<table class="table table-striped" id="results">
+						<thead>
+							<tr>
+								<th>user name</th>
+								<th>full name</th>
+								<th># distributions</th>
+								<th># versions</th>
+								<th style="width: 70px">install</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">load</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">check</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- loaded by AJAX -->
+						</tbody>
+					</table>
+				</div>
+
+{% endblock %}
+
+{% block script %}
+
+	<script type="text/JavaScript">
+	
+		$(document).ready(function () {
+		
+			$.get('http://api.pgxn-tester.org/users', function (data, status, xhr) {
+				for (d in data) {
+					var user = data[d];
+					var row = $('<tr></tr>')
+					row.append('<td><a href="/users/' + user.name + '" class="user-link">' + user.name + '</a></td>');
+					row.append('<td><a href="/users/' + user.name + '" class="user-link">' + user.full_name + '</a></td>');
+					row.append('<td>' + user.distributions + '</td>');
+					row.append('<td>' + user.versions + '</td>');
+
+					add_bar_chart(row, user.install.ok, user.install.error);
+					row.append('<td><span class="text-success">' + user.install.ok + '</span> / <span class="text-danger">' + user.install.error + '</span></td>');
+
+					add_bar_chart(row, user.load.ok, user.load.error);
+					row.append('<td><span class="text-success">' + user.load.ok + '</span> / <span class="text-danger">' + user.load.error + '</span></td>');
+
+					add_bar_chart(row, user.check.ok, user.check.error, user.check.missing);
+					row.append('<td><span class="text-success">' + user.check.ok + '</span> / <span class="text-warning">' + user.check.missing + '</span> / <span class="text-danger">' + user.check.error + '</span></td>');
+
+					$('#results').append(row);
+				}
+			});
+
+		});
+	
+	</script>
+
+{% endblock %}

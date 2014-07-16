@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+				<h1 class="page-header">{{title}}</h1>
+
+				<p>This site collects and displays results of regression tests for distributions (i.e. plugins, installed into the database), published at PostgreSQL eXtension Network (aka <a href="http://pgxn.org/">PGXN</a>). It's inspired by the official <a href="http://pgbuildfarm.org">PostgreSQL buildfarm</a> system, which does about the same thing for PostgreSQL itself. There are some important differences, though.</p>
+
+				<p>The ultimate goal of this is empowering the distribution authors with feedback about failing tests, causes of the failures etc. Because who runs all the regression tests on all PostgreSQL version / platform combination, supported by the distribution, for every change? Or whenever a new major PostgreSQL version is released? I certainly don't. Assuming you have written the tests.</p>
+
+				<p>Hopefully, this will result in more reliable, less fragile distributions, available to PGX users.</p>
+
+				<ul>
+					<li>https://github.com/tvondra/pgxn-tester-server</li>
+					<li>https://github.com/tvondra/pgxn-tester-client</li>
+				</ul>
+
+				<h2 class="sub-header">Limitations</h2>
+
+				<p>The system is not perfect and has limitations that sometimes cause false positives or false negatives. This comes from the variety of distributions, platforms etc. So take the current results with a grain of salt, and it will take some time to fix this.</p>
+
+				<p>Also, currently only extensions published on PGXN are tested (because that's where we get them using <a href="http://pgxnclient.projects.pgfoundry.org/">pgxnclient</a>). However, it's possible that in the future this limitation will be lifted.</p>
+
+				<h2 class="sub-header">API</h2>
+
+				<p>The system provides a simple JSON-based API. It's inspired by RESTful principles (although it's not RESTful and never will be), and PGXN API.</p>
+
+				<p>All the data that you see on this website are served purely through the API - try rewriting http://pgxn-tester.org/{...} to http://api.pgxn-tester.org/{...} and you'll see the actual JSON data returned by the API.</p>
+
+				<p>The API is also used by the clients (requesting info what to test, submitting results back), again using HTTP/JSON. And of course, the collected data is stored in PostgreSQL.</p>
+
+				<p>... TODO more info, link to API.md ...</p>
+
+				<h2 class="sub-header">Running the tests</h2>
+
+				<p>The best way to participate is to run the testing client, which gives us more data (especially if you're running a unique machine (e.g. operating system different from the other clients). To do that, all you need to do is submit a new machine for approval (TODO), and then configure and run the pgxn-tester-client (LINK).</p>
+
+				<p>The machines are identified by names of famous fictional computers (books, movies, ...), and you may choose names for machines you run. Machines running regression tests go crazy from time to time (probably due to the quality of the tested code), <a href="http://namingschemes.com/Psychotic_Computers">this list</a> might be a good inspiration. Also, there's a longer list on <a href="http://en.wikipedia.org/wiki/List_of_fictional_computers">wikipedia</a>.</p>
+
+				<p>The only name that's unacceptable is "skynet" - we don't want to be the ones responsible for the rise of terminators and destruction of humanity, right?</p>
+
+				<div class="bg-danger container-fluid">
+
+					<h4>Security</h4>
+
+					<p>The one major difference compared to running regression tests of PostgreSQL itself is that while the code commited to PostgreSQL is closely reviewed, running regression tests of distributions essentially means running arbitrary C code downloaded from the Internet.</p>
+
+					<p>While I'm not aware of any "evil" distributions doing nasty things, it's probably only a matter of time. So you really need to isolate the tests as much as you can - run them with a user with minimum privileges, with no access to important data etc. If you can run the tests in a VM (LXC, kvm, vmware, ...), that's even better.</p>
+
+				</div>
+
+				<h2 class="sub-header">Contributing code</h2>
+
+				<p>The other thing you can do is contributing code, both to the client or server. Just send me a pull request on github.</p>
+
+				<h2 class="sub-header">Donations</h2>
+
+				<p>Of course, while running this is not extremely expensive, is not free. And with some additional money, we could for example for an AWS instances with Windows (difficult to get otherwise) and run the tests on it. We don't have any "donation button" right now, so contact me directly.</p>
+
+				<h2 class="sub-header">Feedback</h2>
+
+				<p>If you need to discuss something about this site, post a message to the <a href="https://groups.google.com/d/forum/pgxn-users">PGXN group</a>. If you need to reach me directly, send me an e-mail at <a href="mailto:tomas@pgaddict.com">tomas@pgaddict.com</a>.</p>
+
+{% endblock %}

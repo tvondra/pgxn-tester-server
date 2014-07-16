@@ -7,9 +7,6 @@ class Index(Resource):
 	def get(self):
 		'list of URI templates'
 
-		# TODO this should be fetched from the API somehow (not defined in a static way)
-		prefix = '/api'
-
 		return {
 			'distributions' : '/distributions',
 			'distribution' : '/distributions/{name}',
@@ -18,6 +15,6 @@ class Index(Resource):
 			'result' : '/results/{uuid}',
 			'users' : '/users',
 			'user' : '/users/{name}',
-			'animal' : '/animals/{name}',
-			'animals' : '/animals',
+			'machine' : '/machines/{name}',
+			'machines' : '/machines',
 		}

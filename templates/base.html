@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="tests results for PostgreSQL extensions published at PGXN (PostgreSQL Extension Network)">
+	<meta name="author" content="Tomas Vondra">
+	<meta name="email" content="tomas@pgaddict.com">
+
+	{% if title %}
+	<title>{{title}} | PGXN Tester</title>
+	{% else %}
+	<title>PGXN Tester</title>
+	{% endif %}
+
+	<!-- Bootstrap core CSS -->
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link href="/static/css/dashboard.css" rel="stylesheet">
+	<link href="/static/css/bar-chart.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/">PGXN Tester (beta)</a>
+		</div>
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="/users">Users</a></li>
+				<li><a href="/distributions">Distributions</a></li>
+				<li><a href="/machines">Machines</a></li>
+				<li><a href="/results">Results</a></li>
+				<li><a href="/trends">Trends</a></li>
+				<li><a href="/about">About</a></li>
+			</ul>
+		</div>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<div class="row">
+
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar" id="version-menu">
+				</ul>
+			</div>
+
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+				{% block content %}
+					<!-- main page content -->
+				{% endblock %}
+
+			</div>
+
+		</div>
+	</div>
+
+	<!-- Bootstrap core JavaScript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+	<script src="/static/js/flot/jquery.flot.min.js" type="text/javascript"></script>
+	<script src="/static/js/flot/jquery.flot.pie.js" type="text/javascript"></script>
+	<script src="/static/js/bar-chart.js" type="text/javascript"></script>
+
+	{% block script %}
+		<!-- javascript loading data using PGXN Tester API etc. -->
+	{% endblock %}
+
+	<!-- used to display log/diff -->
+	<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="width: 100%;">
+		<div class="modal-dialog modal-lg" style="width: 90%">
+			<div class="modal-content" id="log-content"></div>
+		</div>
+	</div>
+	
+</body>
+</html>

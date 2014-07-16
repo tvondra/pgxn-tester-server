@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+
+				<h1 class="page-header"></h1>
+
+				<div class="table-responsive">
+					<table class="table" id="distributions">
+						<thead>
+							<tr>
+								<th>distribution</th>
+								<th>version</th>
+								<th>date</th>
+								<th>status</th>
+								<th style="width: 70px">install</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">load</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">check</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- loaded by AJAX -->
+						</tbody>
+					</table>
+				</div>
+
+{% endblock %}
+
+{% block script %}
+	<script type="text/JavaScript">
+
+		var user = '{{user}}';
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/users/' + user, function (data, status, xhr) {
+
+				$('.page-header').append(data.info.name + ' (' + data.info.user + ')');
+
+				for (d in data.distributions) {
+
+					var row = $('<tr></tr>')
+					row.append('<td rowspan="' + data.distributions[d].length + '"><a href="/distributions/' + d + '" class="dist-link">' + d + '</a></td>');
+
+					for (v in data.distributions[d]) {
+
+						var version = data.distributions[d][v];
+
+						row.append('<td><a href="/distributions/' + d + '/' + version.version + '" class="dist-link">' + version.version  + '</a></td>');
+						row.append('<td>' + version.date + '</td>');
+						row.append('<td>' + version.status + '</td>');
+
+						add_bar_chart(row, version.install.ok, version.install.error);
+						row.append('<td><span class="text-success">' + version.install.ok + '</span> / <span class="text-danger">' + version.install.error + '</span></td>');
+
+						add_bar_chart(row, version.load.ok, version.load.error);
+						row.append('<td><span class="text-success">' + version.load.ok + '</span> / <span class="text-danger">' + version.load.error + '</span></td>');
+
+						add_bar_chart(row, version.check.ok, version.check.error, version.check.missing);
+						row.append('<td><span class="text-success">' + version.check.ok + '</span> / <span class="text-warning">' + version.check.missing + '</span> / <span class="text-danger">' + version.check.error + '</span></td>');
+
+						$('#distributions').append(row);
+						var row = $('<tr></tr>')
+
+					}
+				}
+
+			});
+
+		});
+	
+	</script>
+{% endblock %}

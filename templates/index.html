@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+				<div class="table-responsive">
+					<table class="table" id="results">
+						<thead>
+							<tr>
+								<th>PostgreSQL</th>
+								<th>status</th>
+								<th style="width: 70px">install</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">load</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">check</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- loaded by AJAX -->
+						</tbody>
+					</table>
+				</div>
+
+{% endblock %}
+{% block script %}
+	<script type="text/JavaScript">
+
+		var statuses = ['stable', 'testing', 'unstable'];
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/stats', function (data, status, xhr) {
+
+				for (d in data.versions) {
+				
+					version = data.versions[data.versions.length - 1 -d];
+						
+					var row = $('<tr></tr>');
+
+					row.append('<td rowspan="3"><a href="/results?pg=' + version + '">' + version + '</a></td>');
+
+					for (i in statuses) {
+
+						var status = statuses[i];
+						var x = data.results[version][status];
+
+						if (i > 0)
+							var row = $('<tr></tr>');
+
+						row.append('<td><a href="/results?pg=' + version + '&status=' + status + '">' + status + '</a></td>');
+
+						add_bar_chart(row, x.install.ok, x.install.error);
+						row.append('<td><span class="text-success">' + x.install.ok + '</span> / <span class="text-danger">' + x.install.error + '</span></td>');
+
+						add_bar_chart(row, x.load.ok, x.load.error);
+						row.append('<td><span class="text-success">' + x.load.ok + '</span> / <span class="text-danger">' + x.load.error + '</span></td>');
+
+						add_bar_chart(row, x.check.ok, x.check.error, x.check.missing);
+						row.append('<td><span class="text-success">' + x.check.ok + '</span> / <span class="text-warning">' + x.check.missing + '</span> / <span class="text-danger">' + x.check.error + '</span></td>');
+
+						$('#results tbody').append(row);
+					}
+				}
+
+			});
+
+		});
+	
+	</script>
+{% endblock %}

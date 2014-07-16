@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+
+				<h1 class="page-header">{{title}}</h1>
+
+				<div class="table-responsive">
+					<table class="table table-striped" id="results">
+						<thead>
+							<tr>
+								<th>distribution</th>
+								<th>user</th>
+								<th style="width: 70px">install</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">load</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">check</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- loaded by AJAX -->
+						</tbody>
+					</table>
+				</div>
+
+{% endblock %}
+
+{% block script %}
+	<script type="text/JavaScript">
+	
+		$(document).ready(function () {
+		
+			$.get('http://api.pgxn-tester.org/distributions', function (data, status, xhr) {
+				for (d in data) {
+					var dist = data[d];
+					var row = $('<tr></tr>')
+					row.append('<td><a href="/distributions/' + dist.name + '" class="dist-link">' + dist.name + '</a></td>');
+					row.append('<td><a href="/users/' + dist.user + '" class="user-link">' + dist.user + '</a></td>');
+
+					add_bar_chart(row, dist.install.ok, dist.install.error);
+					row.append('<td><span class="text-success">' + dist.install.ok + '</span> / <span class="text-danger">' + dist.install.error + '</span></td>');
+
+					add_bar_chart(row, dist.load.ok, dist.load.error);
+					row.append('<td><span class="text-success">' + dist.load.ok + '</span> / <span class="text-danger">' + dist.load.error + '</span></td>');
+
+					add_bar_chart(row, dist.check.ok, dist.check.error, dist.check.missing);
+					row.append('<td><span class="text-success">' + dist.check.ok + '</span> / <span class="text-warning">' + dist.check.missing + '</span> / <span class="text-danger">' + dist.check.error + '</span></td>');
+
+					$('#results').append(row);
+				}
+			});
+
+		});
+	
+	</script>
+{% endblock %}

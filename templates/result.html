@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+
+				<h1 class="page-header">{{title}}</h1>
+
+				<div class="table-responsive">
+					<table class="table" id="summary">
+						<tbody>
+							<tr>
+								<th>test date</th>
+								<td class="test-date"></td>
+							</tr>
+							<tr>
+								<th>machine</th>
+								<td class="machine"></td>
+							</tr>
+							<tr>
+								<th>distribution</th>
+								<td class="distribution"></td>
+							</tr>
+							<tr>
+								<th>version</th>
+								<td class="version"></td>
+							</tr>
+							<tr>
+								<th>status</th>
+								<td class="status"></td>
+							</tr>
+							<tr>
+								<th>user</th>
+								<td class="user"></td>
+							</tr>
+							<tr>
+								<th>install result</th>
+								<td class="install-result"></td>
+							</tr>
+							<tr>
+								<th>load result</th>
+								<td class="load-result"></td>
+							</tr>
+							<tr>
+								<th>check result</th>
+								<td class="check-result"></td>
+							</tr>
+							<tr>
+								<th>install duration (ms)</th>
+								<td class="install-duration"></td>
+							</tr>
+							<tr>
+								<th>load duration (ms)</th>
+								<td class="load-duration"></td>
+							</tr>
+							<tr>
+								<th>load duration (ms)</th>
+								<td class="check-duration"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h2 class="sub-header">pg_config</h2>
+
+				<div class="table-responsive">
+					<table class="table" id="pgconfig">
+						<tbody>
+							<!-- loaded by AJAX -->
+						</tbody>
+					</table>
+				</div>
+
+				<h2 class="sub-header">Install Log</h2>
+				<pre id="install-log"></pre>
+
+				<h2 class="sub-header">Load Log</h2>
+				<pre id="load-log"></pre>
+
+				<h2 class="sub-header">Check Log</h2>
+				<pre id="check-log"></pre>
+
+				<h2 class="sub-header">Diff</h2>
+				<pre id="check-diff"></pre>
+{% endblock %}
+
+{% block script %}
+	<script type="text/JavaScript">
+
+		var uuid = '{{uuid}}';
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/results/' + uuid, function (data, status, xhr) {
+
+				$('#summary .machine').append('<a href="/machines/' + data.machine + '">' + data.machine + '</a>');
+				$('#summary .distribution').append('<a href="/distributions/' + data.dist + '">' + data.dist + '</a>');
+				$('#summary .version').append('<a href="/distributions/' + data.dist + '/' + data.version + '">' + data.version + '</a>');
+				$('#summary .status').append(data.state);
+				$('#summary .user').append('<a href="/users/' + data.user + '">' + data.user + '</a>');
+				$('#summary .test-date').append(data.test_date);
+
+				$('#summary .install-result').append(data.install_result);
+				$('#summary .load-result').append(data.load_result);
+				$('#summary .check-result').append(data.check_result);
+
+				$('#summary .install-duration').append(data.install_duration);
+				$('#summary .load-duration').append(data.load_duration);
+				$('#summary .check-duration').append(data.check_duration);
+
+				for (i in data.pg_config) {
+					var row = $('<tr></tr>')
+					row.append('<th>' + i + '</th>');
+					row.append('<td>' + data.pg_config[i] + '</td>');
+					$('#pgconfig tbody').append(row);
+				}
+
+				$('#install-log').append(data.log_install);
+				$('#load-log').append(data.log_load);
+				$('#check-log').append(data.log_check);
+				$('#check-diff').append(data.check_diff);
+
+			});
+
+		});
+	
+	</script>
+{% endblock %}

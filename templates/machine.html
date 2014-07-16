@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+
+				<h1 class="page-header">{{title}}</h1>
+
+				<div class="table-responsive">
+					<table class="table" id="info">
+						<tbody>
+							<tr>
+								<th>active</th>
+								<td class="is-active"></td>
+							</tr>
+							<tr>
+								<th>date of last test</th>
+								<td class="last-test"></td>
+							</tr>
+							<tr>
+								<th># of tests</th>
+								<td class="test-count"></td>
+							</tr>
+							<tr>
+								<th># of distributions</th>
+								<td class="distribution-count"></td>
+							</tr>
+							<tr>
+								<th># of versions</th>
+								<td class="version-count"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h2 class="sub-header">Statistics</h2>
+
+				<div class="table-responsive">
+					<table class="table" id="stats">
+						<thead>
+							<tr>
+								<th>PostgreSQL</th>
+								<th>status</th>
+								<th style="width: 70px">install</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">load</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">check</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- loaded by AJAX -->
+						</tbody>
+					</table>
+				</div>
+
+{% endblock %}
+
+{% block script %}
+	<script type="text/JavaScript">
+
+		var machine = '{{machine}}';
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/machines/' + machine, function (data, status, xhr) {
+				$('#info .is-active').append(data.info.machine_active);
+				$('#info .last-test').append(data.info.last_test_date);
+				$('#info .test-count').append(data.info.tests);
+				$('#info .distribution-count').append(data.info.distributions);
+				$('#info .version-count').append(data.info.versions);
+
+				var versions = [];
+				for (version in data.stats) {
+					versions[versions.length] = version;
+				}
+
+				for (i = versions.length-1; i >= 0; i--) {
+					var version = versions[i];
+					var row = $('<tr></tr>');
+					row.append('<td rowspan="3">' + version + '</td>');
+
+					for (status in data.stats[version]) {
+						var stats = data.stats[version][status];
+
+						row.append('<td>' + status + '</td>');
+
+						add_bar_chart(row, stats.install.ok, stats.install.error);
+						row.append('<td><span class="text-success">' + stats.install.ok + '</span> / <span class="text-danger">' + stats.install.error + '</span></td>');
+
+						add_bar_chart(row, stats.load.ok, stats.load.error);
+						row.append('<td><span class="text-success">' + stats.load.ok + '</span> / <span class="text-danger">' + stats.load.error + '</span></td>');
+
+						add_bar_chart(row, stats.check.ok, stats.check.error, stats.check.missing);
+						row.append('<td><span class="text-success">' + stats.check.ok + '</span> / <span class="text-warning">' + stats.check.missing + '</span> / <span class="text-danger">' + stats.check.error + '</span></td>');
+
+						$('#stats tbody').append(row);
+						row = $('<tr></tr>');
+					}
+
+				}
+
+			});
+
+		});
+	
+	</script>
+{% endblock %}

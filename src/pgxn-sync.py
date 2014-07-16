@@ -67,6 +67,10 @@ def get_users(conn, templates):
 
 	return users
 
+def get_version_meta(conn, templates, release, version):
+
+	uri = templates['meta'].replace('{dist}', release.lower()).replace('{version}', version['version'])
+	return get_data(conn, uri)
 
 def get_users_releases(conn, templates, user):
 	'fetches list of releases for a single user'
@@ -122,18 +126,18 @@ def get_release_id(conn, uid, release):
 
 		cursor.close()
 
-def get_version_id(conn, rid, version, date, status):
+def get_version_id(conn, rid, version, date, status, meta):
 
 	try:
 
 		cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-		cursor.execute('SELECT id FROM distribution_versions v WHERE dist_id = %(rid)s AND dist_version = %(version)s', {'rid' : rid, 'version' : version})
+		cursor.execute('SELECT id FROM distribution_versions v WHERE dist_id = %(rid)s AND version_number = %(version)s', {'rid' : rid, 'version' : version})
 		row = cursor.fetchone()
 
 		if row:
 			return row['id']
 
-		cursor.execute('INSERT INTO distribution_versions (dist_id, dist_version, dist_date, dist_status) VALUES (%(rid)s, %(version)s, %(date)s, %(status)s)', {'rid' : rid, 'version' : version, 'date' : date, 'status' : status})
+		cursor.execute('INSERT INTO distribution_versions (dist_id, version_number, version_date, version_status, version_meta) VALUES (%(rid)s, %(version)s, %(date)s, %(status)s, %(meta)s)', {'rid' : rid, 'version' : version, 'date' : date, 'status' : status, 'meta' : meta})
 		cursor.execute("SELECT currval('distribution_versions_id_seq') AS id")
 
 		row = cursor.fetchone()
@@ -144,6 +148,8 @@ def get_version_id(conn, rid, version, date, status):
 
 		cursor.close()
 
+def get_spec_url(host, release, version):
+	return 'http://' + host + (templates['meta'].replace('{dist}', release).replace('{version}', version))
 
 if __name__ == '__main__':
 
@@ -198,7 +204,9 @@ if __name__ == '__main__':
 			# process all the versions for this release
 			for version in versions:
 
-				vid = get_version_id(dbconn, rid, version['version'], version['date'], version['state'])
+				meta = get_version_meta(httpconn, templates, release, version)
+
+				vid = get_version_id(dbconn, rid, version['version'], version['date'], version['state'], json.dumps(meta))
 
 	dbconn.commit()
 

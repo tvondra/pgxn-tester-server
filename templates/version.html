@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+
+				<h1 class="page-header"></h1>
+
+				<div class="table-responsive">
+					<table class="table" id="info">
+						<tbody>
+							<tr>
+								<th>description</th>
+								<td class="description"></td>
+							</tr>
+							<tr>
+								<th>date</th>
+								<td class="date"></td>
+							</tr>
+							<tr>
+								<th>status</th>
+								<td class="status"></td>
+							</tr>
+							<tr>
+								<th>user</th>
+								<td class="user"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h2 class="sub-header">Current</h2>
+
+				<div class="table-responsive">
+					<table class="table" id="stats">
+						<thead>
+							<tr>
+								<th>machine</th>
+								<th>version</th>
+								<th>date</th>
+								<th>install</th>
+								<th>load</th>
+								<th>check</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- loaded by AJAX -->
+						</tbody>
+					</table>
+				</div>
+
+{% endblock %}
+
+{% block script %}
+	<script type="text/JavaScript">
+
+		var distribution = '{{distribution}}';
+		var version = '{{version}}';
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/distributions/' + distribution + '/' + version, function (data, status, xhr) {
+
+				$('.page-header').append('<a href="/distributions/' + data.name + '">' + data.name + '</a> ' + data.version);
+
+				$('#info .user').append('<a href="/users/' + data.user + '">' + data.user + '</a>');
+				$('#info .date').append(data.date);
+				$('#info .status').append(data.status);
+				$('#info .description').append(data.description);
+
+				var phases = ['install', 'load', 'check'];
+				
+				for (a in data.stats) {
+					var row = $('<tr></tr>');
+					row.append('<td rowspan="' + data.stats[a].length + '"><a href="/machines/' + a + '">' + a + '</a></td>');
+
+					for (i in data.stats[a]) {
+						row.append('<td>' + data.stats[a][i].version + '</td>');
+						row.append('<td>' + data.stats[a][i].date + '</td>');
+
+						for (p in phases) {
+
+							var phase = phases[p];
+
+							if (data.stats[a][i][phase] == 'ok')
+								row.append('<td><span class="btn btn-xs bg-success">ok</span></td>');
+							else if (data.stats[a][i][phase] == 'error')
+								row.append('<td><span class="btn btn-xs bg-danger">error</span></td>');
+							else if (data.stats[a][i][phase] == 'missing')
+								row.append('<td><span class="btn btn-xs bg-warning">missing</span></td>');
+							else
+								row.append('<td>&nbsp;</td>');
+
+						}
+
+						row.append('<td><a class="btn btn-primary btn-xs active" role="button" href="/results/' + data.stats[a][i].uuid + '" class="result-link">details</a></td>');
+						$('#stats tbody').append(row);
+						row = $('<tr></tr>');
+					}
+
+				}
+
+			});
+
+		});
+	
+	</script>
+{% endblock %}

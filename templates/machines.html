@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+
+				<h1 class="page-header">{{title}}</h1>
+
+				<div class="table-responsive">
+					<table class="table table-striped" id="results">
+						<thead>
+							<tr>
+								<th>machine</th>
+								<th>active</th>
+								<th>last test</th>
+								<th># tests</th>
+								<th># distibutions</th>
+								<th># versions</th>
+								<th style="width: 70px">install</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">load</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">check</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- loaded by AJAX -->
+						</tbody>
+					</table>
+				</div>
+
+{% endblock %}
+
+{% block script %}
+
+	<script type="text/JavaScript">
+
+		function format_date(val) {
+			if (val != null) {
+				var d = new Date(val);
+				return d.getFullYear() + '/' + d.getMonth() + '/' + d.getDate() + " " + ((d.getHours() < 10) ? '0' : '') + d.getHours() +  ":" + d.getMinutes() + ":" + d.getSeconds();
+			} else {
+				return "-";
+			}
+		}
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/machines', function (data, status, xhr) {
+				for (d in data) {
+					var machine = data[d];
+					var row = $('<tr></tr>')
+
+					row.append('<td><a href="/machines/' + machine.name + '" class="machine-link">' + machine.name + '</a></td>');
+					row.append('<td>' + machine.is_active + '</td>');
+					row.append('<td>' + format_date(machine.last_test_date) + '</td>');
+
+					if (machine.tests) {
+						row.append('<td>' + machine.tests + '</td>');
+						row.append('<td>' + machine.distributions + '</td>');
+						row.append('<td>' + machine.versions + '</td>');
+					} else {
+						row.append('<td>-</td><td>-</td><td>-</td>');
+					}
+
+					/* if we have install result, we should have info for all phases */
+					if (machine.install.ok) {
+
+						var chart = null;
+
+						add_bar_chart(row, machine.install.ok, machine.install.error);
+						row.append('<td><span class="text-success">' + machine.install.ok + '</span> / <span class="text-danger">' + machine.install.error + '</span></td>');
+
+						add_bar_chart(row, machine.load.ok, machine.load.error);
+						row.append('<td><span class="text-success">' + machine.load.ok + '</span> / <span class="text-danger">' + machine.load.error + '</span></td>');
+
+						add_bar_chart(row, machine.check.ok, machine.check.error, machine.check.missing);
+						row.append('<td><span class="text-success">' + machine.check.ok + '</span> / <span class="text-warning">' + machine.check.missing + '</span> / <span class="text-danger">' + machine.check.error + '</span></td>');
+
+					} else {
+						row.append('<td>-</td><td>-</td><td>-</td>');
+					}
+
+					$('#results').append(row);
+				}
+			});
+
+		});
+
+	</script>
+
+{% endblock %}

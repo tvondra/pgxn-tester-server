@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+				<h1 class="page-header">{{title}}</h1>
+
+				<div class="table-responsive">
+					<table class="table" id="versions">
+						<thead>
+							<tr>
+								<th>version</th>
+								<th>date</th>
+								<th>status</th>
+								<th style="width: 70px">install</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">load</th>
+								<th>&nbsp;</th>
+								<th style="width: 70px">check</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- loaded by AJAX -->
+						</tbody>
+					</table>
+				</div>
+
+{% endblock %}
+
+{% block script %}
+	<script type="text/JavaScript">
+
+		var distribution = '{{distribution}}';
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/distributions/' + distribution, function (data, status, xhr) {
+
+				for (d in data.versions) {
+					var row = $('<tr></tr>');
+					row.append('<td><a href="/distributions/' + distribution + '/' + data.versions[d].version + '">' + data.versions[d].version + '</a></td>');
+					row.append('<td>' + data.versions[d].date + '</td>');
+					row.append('<td>' + data.versions[d].status + '</td>');
+
+					add_bar_chart(row, data.versions[d].install.ok, data.versions[d].install.error);
+					row.append('<td><span class="text-success">' + data.versions[d].install.ok + '</span> / <span class="text-danger">' + data.versions[d].install.error + '</span></td>');
+
+					add_bar_chart(row, data.versions[d].load.ok, data.versions[d].load.error);
+					row.append('<td><span class="text-success">' + data.versions[d].load.ok + '</span> / <span class="text-danger">' + data.versions[d].load.error + '</span></td>');
+
+					add_bar_chart(row, data.versions[d].check.ok, data.versions[d].check.error, data.versions[d].check.missing);
+					row.append('<td><span class="text-success">' + data.versions[d].check.ok + '</span> / <span class="text-warning">' + data.versions[d].check.missing + '</span> / <span class="text-danger">' + data.versions[d].check.error + '</span></td>');
+
+					$('#versions tbody').append(row);
+				}
+
+			});
+
+		});
+	
+	</script>
+{% endblock %}
