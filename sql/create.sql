@@ -131,6 +131,7 @@ CREATE TABLE results (
 
 CREATE INDEX results_version_idx ON results (dist_version_id);
 CREATE INDEX results_machine_idx ON results (machine_id);
+CREATE INDEX results_submit_date_idx ON results(submit_date);
 CREATE INDEX distribution_version_idx ON distribution_versions(dist_id);
 CREATE INDEX distributions_user_idx ON distributions(user_id);
 
