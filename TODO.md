@@ -50,6 +50,7 @@
 # Documentation
 
 * add instructions on how to operate the client with sufficient security (confine the tests within some sort of container, limit networking ...)
+* improve INSTALL
 
 
 # Miscellaneous
