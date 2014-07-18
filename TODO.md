@@ -55,6 +55,7 @@
 
 # Miscellaneous
 
+* fix and improve the tests
 * proper configuration (right now it's hardcoded in the main.py file)
 * consider separating the api / ui (right now it's in the same repository etc.)
 * consider using SSL - we're not transmitting anything confidential, but it might protect us against some basic attacks
