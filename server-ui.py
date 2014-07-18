@@ -1,14 +1,16 @@
 #!/usr/bin/python
 
 import json
+import sys
+
 from flask import Flask, render_template, request
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
 
-app.config.update(dict(
-    DEBUG=True,
-    SECRET_KEY='development key'
-))
+sys.path.append('src')
+
+# load config from the config.ui dictionary
+app.config.from_object('config.ui')
 
 @app.route('/')
 def summary_page():
@@ -59,4 +61,4 @@ def about_page():
 	return render_template('about.html', title='About')
 
 if __name__ == '__main__':
-	app.run(port=6000)
+	app.run()

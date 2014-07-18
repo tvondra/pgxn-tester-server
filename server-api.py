@@ -1,29 +1,22 @@
 #!/usr/bin/python
 
+import json
 import sys
 
 from flask import Flask
 from flask.ext.restful import Api
 
+# this is where the implementation is placed
 sys.path.append('src')
 
 from db import DB
-
 import cors
 
 # create flask application
 app = Flask(__name__)
 
-# Load default config and override config from an environment variable
-app.config.update(dict(
-    DATABASE='host=localhost user=tomas dbname=pgxn-tester port=6666',
-    DEBUG=True,
-    SECRET_KEY='development key',
-    USERNAME='admin',
-    PASSWORD='default'
-))
-
-app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+# load config from the config.api dictionary
+app.config.from_object('config.api')
 
 # initialize the database pool
 DB.init_pool(app.config['DATABASE'])
