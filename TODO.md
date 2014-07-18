@@ -26,6 +26,7 @@
 * simple filtering in tables (e.g. of results) - e.g. by clicking on a value (or maybe an icon next to it), displaying a list of active filters (+ option to remove them)
 * better links, so that it's possible to click on 'number of failed tests' in the table, and get a list of the failed results
 * add a link to PGXN (to distribution, version and user)
+* the API URI is hardcoded in the templates (so it can't be reused without modifying them)
 
 
 ## Execution of tests
