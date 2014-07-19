@@ -57,7 +57,7 @@ If you need to discuss something about this site, the best way to do that by pos
 
 ## License
 
-The tool itself is distributed under BSD license (see LICENSE). It also uses several components that have different licenses - [Bootstrap][bootstrap], [jquery][jquery] and [flot][flot].
+The tool itself is distributed under BSD-style license (see LICENSE). It also uses several components that have different licenses - [Bootstrap][bootstrap], [jquery][jquery] and [flot][flot].
 
 [bootstrap]: https://github.com/tvondra/pgxn-tester-server/blob/master/LICENSE.bootstrap
 [jquery]: https://github.com/tvondra/pgxn-tester-server/blob/master/LICENSE.jquery
