@@ -13,6 +13,7 @@
 * implement proper caching / set cache-related headers properly (e.g. test results are immutable, other pages are not)
 * maybe a varnish cache invalidated from triggers (http://www.hagander.net/talks/Database%20driven%20cache%20invalidation.pdf) might be a good solution
 * case (in)sensitivity for searches
+* make sure all timestamps are in UTC and then append "Z" (for Zulu time, AKA UTC) to them. Removes ambiguity.
 
 
 ## UI features
