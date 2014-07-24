@@ -5,6 +5,7 @@ from flask.ext.restful import Resource, abort, reqparse
 from db import DB
 from utils import verify_signature, get_pg_version
 import uuid
+import base64
 
 def result_parser():
 
@@ -150,7 +151,7 @@ class ResultList(Resource):
 									  %(load_duration)s, %(install_duration)s, %(check_duration)s, %(load_log)s, %(install_log)s, %(check_log)s, %(diff)s)''',
 							  {'uuid' : args.uuid, 'machine' : machine['id'], 'version' : version['id'], 'pgversion' : get_pg_version(args.config),
 							   'load' : (args.load != 'unknown' and args.load or None), 'install' : (args.install != 'unknown' and args.install or None), 'check' : (args.check != 'unknown' and args.check or None),
-							   'install_log' : args.install_log, 'load_log' : args.load_log, 'check_log' : args.check_log, 'diff' : args.check_diff,
+							   'install_log' : base64.b64decode(args.install_log), 'load_log' : base64.b64decode(args.load_log), 'check_log' : base64.b64decode(args.check_log), 'diff' : base64.b64decode(args.check_diff),
 							   'install_duration' : args.install_duration, 'load_duration' : args.load_duration, 'check_duration' : args.check_duration, 
 							   'config' : args.config, 'env' : args.env})
 
