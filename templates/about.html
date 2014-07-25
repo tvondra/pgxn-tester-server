@@ -46,6 +46,8 @@
 
 					<p>While I'm not aware of any "evil" distributions doing nasty things, it's probably only a matter of time. So you really need to isolate the tests as much as you can - run them with a user with minimum privileges, with no access to important data etc. If you can run the tests in a VM (LXC, kvm, vmware, ...), that's even better.</p>
 
+					<p>Generally, the best isolation is provided by <a href="http://en.wikipedia.org/wiki/Hardware-assisted_virtualization">HVM</a> virtualisation solutions (e.g. <a href="http://www.linux-kvm.org/">KVM</a>-based solutions like <a href="http://wiki.qemu.org/KVM">qemu-kvm</a>). Recently, there's a lot of fuss about <a href="http://linuxcontainers.org/">LXC</a>, and it's often promoted as a "lightweight virtualization" - be aware that while it's maturing quickly, it relies on kernel namespaces and not all resources are properly namespaced in the kernel (especially true for production deploymeent, frequently using older kernels and LXC versions). Also, it's "same kernel" solution which means the container (essentially, just a named group of processes) uses the same kernel as the rest of the system, so if there's a local exploit (e.g. a broken syscall) ...</p>
+
 				</div>
 
 				<h2 class="sub-header">Contributing code</h2>
