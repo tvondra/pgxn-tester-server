@@ -36,7 +36,6 @@
 * automatic download / build of new PostgreSQL releases
 * skip distributions / versions that were already tested by that animal (i.e. provide list of already performed tests, skip them in the client)
 * allow '--force' in the client, to retest everything (e.g. after fixing a problem on the server configuration, ...)
-* implement limit on how long a test of an extension may run (e.g. to protect against infinite loops)
 * getting additional info about the machines (env variables, uname, dmesg, ...)
 
 
