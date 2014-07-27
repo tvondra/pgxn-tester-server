@@ -63,7 +63,6 @@
 * create Twitter account for news on the site, maybe regular updates (and maybe RSS for the same purpose)
 * do a stress-test, to see what needs to be improved
 * the current UI does not really work with PostgreSQL releases
-* add a simple cron script, refreshing the materialied views every few minutes
 * a simple 'status' button, people might put onto their websites or whatever (showing status of their extensions, ...) - something like a status button for travis-ci
 * replace the built-in server with a proper production deployment (http://flask.pocoo.org/docs/deploying/) - uwsgi seems like a good option (http://flask.pocoo.org/docs/deploying/uwsgi/)
 * make the 'update-views' (or maybe refresh_views) more clever, by checking whether the timestamp of the last test changed (and do nothing if not)
