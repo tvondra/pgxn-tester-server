@@ -27,7 +27,6 @@
 * add a link to PGXN (to distribution, version and user)
 * the API URI is hardcoded in the templates (so it can't be reused without modifying them)
 * show only supported PostgreSQL versions on the front-page (and add a switch to show all)
-* add a short explanation to the front-page, that this is just a summary of tests by PostgreSQL versions (we're not testing PostgreSQL, but extensions)
 
 
 ## Execution of tests

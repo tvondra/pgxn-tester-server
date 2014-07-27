@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 
+				<p>This is a simple summary of the tests, categorized by PostgreSQL major version and <a href="http://pgxn.org/spec/#release_status">release status</a> of the extension (unstable, testing or stable). Each value is a number of extensions passing or failing a test, corresponding to <a href="http://pgxnclient.projects.pgfoundry.org/usage.html#pgxn-install">install</a>, <a href="http://pgxnclient.projects.pgfoundry.org/usage.html#pgxn-load">load</a> and <a href="http://pgxnclient.projects.pgfoundry.org/usage.html#pgxn-check">check</a> commands of the <a href="http://pgxnclient.projects.pgfoundry.org/">pgxnclient</a> tool. This is illustrated by a simple chart, showing a percentage of extensions passing (green) or failing (red) the test. The last step (check) may be "orange" which means "no regression tests provided." Naturally, the greenier the better. This is especially true for "stable" extensions, which are supposed to be "ready for users" (while unstable/testing are alpha/beta versions and thus expected to have issues).</p>
+
 				<div class="table-responsive">
 					<table class="table" id="results">
 						<thead>
