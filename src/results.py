@@ -42,7 +42,7 @@ class ResultList(Resource):
 					FROM distributions d JOIN users u ON (d.user_id = u.id)
 										 JOIN distribution_versions v ON (d.id = v.dist_id)
 										 JOIN results r ON (r.dist_version_id = v.id)
-										 JOIN machines m ON (r.machine_id = m.id) %(where)s ORDER BY submit_date DESC LIMIT 50"""
+										 JOIN machines m ON (r.machine_id = m.id)"""
 
 	def get(self):
 		'get info about distribution, along with info about author'
@@ -50,6 +50,11 @@ class ResultList(Resource):
 		# TODO add some basic paging of results (using submit_date of the results)
 		where = []
 		params = {}
+
+		if 'page' in request.args:
+			params.update({'offset' : int(request.args['page']) * 20})
+		else:
+			params.update({'offset' : 0})
 
 		# filter only distributions published by the particular user
 		if 'user' in request.args:
@@ -111,10 +116,11 @@ class ResultList(Resource):
 			where.append('check_result = %(check)s')
 			params.update({'check' : request.args['check']})
 
+		sql = ResultList.list_sql
 		if where:
-			sql = ResultList.list_sql % {'where' : ' WHERE ' + ' AND '.join(where)}
-		else:
-			sql = ResultList.list_sql % {'where' : ''}
+			sql += ' WHERE ' + (' AND '.join(where))
+
+		sql += " ORDER BY submit_date DESC LIMIT 20 OFFSET %(offset)s"
 
 		with DB() as (conn, cursor):
 			# info about distribution

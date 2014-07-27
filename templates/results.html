@@ -5,7 +5,7 @@
 
 				<div class="table-responsive">
 					<form class="form-inline" role="form">
-						<table class="table table-striped" id="results">
+						<table class="table table-striped table-condensed" id="results">
 							<thead>
 								<tr>
 									<th>date</th>
@@ -74,7 +74,21 @@
 								<!-- loaded by AJAX -->
 							</tbody>
 						</table>
-					</div>
+
+						<div class="row">
+							<div class="col-md-6">
+								<button type="button" class="btn btn-default" id="prev-page">
+									<span class="glyphicon glyphicon-backward"></span> previous page
+								</button>
+							</div>
+							<div class="col-md-6 text-right">
+								<button type="button" class="btn btn-default" id="next-page">
+									next page <span class="glyphicon glyphicon-forward"></span>
+								</button>
+							</div>
+						</div>
+
+					</form>
 				</div>
 {% endblock %}
 
@@ -85,41 +99,11 @@
 			{% for name in filters %}'{{name}}' : '{{filters[name]}}', {% endfor %}
 		};
 
+		var current_page = 0;
+
 		$(document).ready(function () {
 
-			$.get('http://api.pgxn-tester.org/results', filters, function (data, status, xhr) {
-
-				var phases = ['install', 'load', 'check'];
-
-				for (d in data) {
-					var row = $('<tr></tr>')
-					row.append('<td>' + data[d].test_date + '</td>');
-					row.append('<td><a href="/distributions/' + data[d].dist + '" class="dist-link">' + data[d].dist + '</a></td>');
-					row.append('<td><a href="/distributions/' + data[d].dist + '/' + data[d].version + '" class="version-link">' + data[d].version + '</a></td>');
-					row.append('<td>' + data[d].status + '</td>');
-					row.append('<td><a href="/machines/' + data[d].machine+ '" class="machine-link">' + data[d].machine + '</a></td>');
-					row.append('<td>' + data[d].pg_version + '</td>');
-
-					for (p in phases) {
-					
-						var phase = phases[p];
-
-						if (data[d][phase] == 'ok')
-							row.append('<td><span class="btn btn-xs bg-success">ok</span></td>');
-						else if (data[d][phase] == 'error')
-							row.append('<td><span class="btn btn-xs bg-danger">error</span></td>');
-						else if (data[d][phase] == 'missing')
-							row.append('<td><span class="btn btn-xs bg-warning">missing</span></td>');
-						else
-							row.append('<td>&nbsp;</td>');
-					}
-
-					row.append('<td><a class="btn btn-primary btn-xs active" role="button" href="/results/' + data[d].uuid + '" class="result-link">details</a></td>');
-					$('#results').append(row);
-
-				}
-
-			});
+			reload_results();
 
 			$.get('http://api.pgxn-tester.org/distributions', function (data, status, xhr) {
 				for (d in data) {
@@ -158,6 +142,7 @@
 			$('#filter-button').click(function () {
 
 				filters = {};
+				current_page = 0;
 
 				if ($('#distribution-name').val() != '')
 					filters['distribution'] = $('#distribution-name option:selected').val();
@@ -183,43 +168,65 @@
 				if ($('#check-result').val() != '')
 					filters['check'] = $('#check-result').val();
 
-				$.get('http://api.pgxn-tester.org/results', filters, function (data, status, xhr) {
-
-					$('#results tbody').empty();
-
-					var phases = ['install', 'load', 'check'];
-
-					for (d in data) {
-						var row = $('<tr></tr>')
-						row.append('<td>' + data[d].test_date + '</td>');
-						row.append('<td><a href="/distributions/' + data[d].dist + '" class="dist-link">' + data[d].dist + '</a></td>');
-						row.append('<td><a href="/distributions/' + data[d].dist + '/' + data[d].version + '" class="version-link">' + data[d].version + '</a></td>');
-						row.append('<td>' + data[d].status + '</td>');
-						row.append('<td><a href="/machines/' + data[d].machine+ '" class="machine-link">' + data[d].machine + '</a></td>');
-						row.append('<td>' + data[d].pg_version + '</td>');
-
-						for (p in phases) {
-						
-							var phase = phases[p];
-
-							if (data[d][phase] == 'ok')
-								row.append('<td><span class="btn btn-xs bg-success">ok</span></td>');
-							else if (data[d][phase] == 'error')
-								row.append('<td><span class="btn btn-xs bg-danger">error</span></td>');
-							else if (data[d][phase] == 'missing')
-								row.append('<td><span class="btn btn-xs bg-warning">missing</span></td>');
-							else
-								row.append('<td>&nbsp;</td>');
-						}
-
-						row.append('<td><a class="btn btn-primary btn-xs active" role="button" href="/results/' + data[d].uuid + '" class="result-link">details</a></td>');
-						$('#results tbody').append(row);
-					}
-				});
+				reload_results();
 
 			});
 
+			$('#prev-page').click(function () {
+				if (current_page > 0) {
+					current_page -= 1;
+					reload_results();
+				}
+			});
+
+			$('#next-page').click(function () {
+				current_page += 1;
+				reload_results();
+			});
+
 		});
-	
+
+		function reload_results() {
+
+			var tmp_filters = filters;
+			
+			tmp_filters['page'] = current_page;
+
+			$.get('http://api.pgxn-tester.org/results', tmp_filters, function (data, status, xhr) {
+
+				$('#results tbody').empty();
+
+				var phases = ['install', 'load', 'check'];
+
+				for (d in data) {
+					var row = $('<tr></tr>')
+					row.append('<td>' + data[d].test_date + '</td>');
+					row.append('<td><a href="/distributions/' + data[d].dist + '" class="dist-link">' + data[d].dist + '</a></td>');
+					row.append('<td><a href="/distributions/' + data[d].dist + '/' + data[d].version + '" class="version-link">' + data[d].version + '</a></td>');
+					row.append('<td>' + data[d].status + '</td>');
+					row.append('<td><a href="/machines/' + data[d].machine+ '" class="machine-link">' + data[d].machine + '</a></td>');
+					row.append('<td>' + data[d].pg_version + '</td>');
+
+					for (p in phases) {
+					
+						var phase = phases[p];
+
+						if (data[d][phase] == 'ok')
+							row.append('<td><span class="btn btn-xs bg-success">ok</span></td>');
+						else if (data[d][phase] == 'error')
+							row.append('<td><span class="btn btn-xs bg-danger">error</span></td>');
+						else if (data[d][phase] == 'missing')
+							row.append('<td><span class="btn btn-xs bg-warning">missing</span></td>');
+						else
+							row.append('<td>&nbsp;</td>');
+					}
+
+					row.append('<td><a class="btn btn-primary btn-xs active" role="button" href="/results/' + data[d].uuid + '" class="result-link">details</a></td>');
+					$('#results tbody').append(row);
+				}
+			});
+
+		}
+
 	</script>
 {% endblock %}

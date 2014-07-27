@@ -21,13 +21,13 @@
 * nice formatting of the install/load logs (emphasize ERROR lines)
 * nice formatting of the regression diff (added/deleted lines)
 * anonymization/cleanup of the logs (the logs submitted by the clients often contain specific paths etc. - not exactly confidention but probably worth removing)
-* most pages miss proper paging (especially listing results)
 * add google analytics snippet (conditionally based on configuration / custom ID)
-* when listing results, allow 'failures only' mode
 * simple filtering in tables (e.g. of results) - e.g. by clicking on a value (or maybe an icon next to it), displaying a list of active filters (+ option to remove them)
 * better links, so that it's possible to click on 'number of failed tests' in the table, and get a list of the failed results
 * add a link to PGXN (to distribution, version and user)
 * the API URI is hardcoded in the templates (so it can't be reused without modifying them)
+* show only supported PostgreSQL versions on the front-page (and add a switch to show all)
+* add a short explanation to the front-page, that this is just a summary of tests by PostgreSQL versions (we're not testing PostgreSQL, but extensions)
 
 
 ## Execution of tests
