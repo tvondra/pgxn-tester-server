@@ -96,6 +96,21 @@ class ResultList(Resource):
 			where.append('submit_date <= %(date)s')
 			params.update({'date' : request.args['date']})
 
+		# filter by install result
+		if 'install' in request.args:
+			where.append('install_result = %(install)s')
+			params.update({'install' : request.args['install']})
+
+		# filter by load result
+		if 'load' in request.args:
+			where.append('load_result = %(load)s')
+			params.update({'load' : request.args['load']})
+
+		# filter by check result
+		if 'check' in request.args:
+			where.append('check_result = %(check)s')
+			params.update({'check' : request.args['check']})
+
 		if where:
 			sql = ResultList.list_sql % {'where' : ' WHERE ' + ' AND '.join(where)}
 		else:

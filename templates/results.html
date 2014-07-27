@@ -21,22 +21,53 @@
 								</tr>
 								<tr>
 									<th>&nbsp;</th>
-									<th><input type="text" class="form-control input-sm" id="distribution-name"></th>
-									<th><input type="text" class="form-control input-sm" style="width: 7em" id="version-number"></th>
 									<th>
-										<select class="form-control input-sm" id="distribution-status">
-											<option></option>
-											<option>stable</option>
-											<option>testing</option>
-											<option>unstable</option>
+										<select class="form-control input-sm" id="distribution-name">
+											<option value="">-- all --</option>
 										</select>
 									</th>
-									<th><input type="text" class="form-control input-sm" id="machine-name"></th>
+									<th>
+										<select class="form-control input-sm" id="version-number" disabled="disabled">
+											<option value="">-- all --</option>
+										</select>
+									</th>
+									<th>
+										<select class="form-control input-sm" id="distribution-status">
+											<option value="">-- all --</option>
+											<option value="stable">stable</option>
+											<option value="testing">testing</option>
+											<option value="unstable">unstable</option>
+										</select>
+									</th>
+									<th>
+										<select class="form-control input-sm" id="machine-name">
+											<option value="">-- all --</option>
+										</select>
+									</th>
 									<th><input type="text" class="form-control input-sm" style="width: 5em" id="postgres-version"></th>
-									<th><a href="#" class="btn btn-sm btn-primary" id="filter-button">Filter</a></th>
-									<th>&nbsp;</th>
-									<th>&nbsp;</th>
-									<th>&nbsp;</th>
+									<th>
+										<select class="form-control input-sm" id="install-result">
+											<option value="">-- all --</option>
+											<option value="ok">ok</option>
+											<option value="error">error</option>
+										</select>
+									</th>
+									<th>
+										<select class="form-control input-sm" id="load-result">
+											<option value="">-- all --</option>
+											<option value="ok">ok</option>
+											<option value="error">error</option>
+										</select>
+									</th>
+									<th>
+										<select class="form-control input-sm" id="check-result">
+											<option value="">-- all --</option>
+											<option value="ok">ok</option>
+											<option value="error">error</option>
+											<option value="missing">missing</option>
+										</select>
+									</th>
+									<th><a href="#" class="btn btn-sm btn-success" id="filter-button">Filter</a></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -85,7 +116,43 @@
 
 					row.append('<td><a class="btn btn-primary btn-xs active" role="button" href="/results/' + data[d].uuid + '" class="result-link">details</a></td>');
 					$('#results').append(row);
+
 				}
+
+			});
+
+			$.get('http://api.pgxn-tester.org/distributions', function (data, status, xhr) {
+				for (d in data) {
+					$('#distribution-name').append('<option value="' + data[d].name + '">' + data[d].name  + '</option>');
+				}
+			});
+
+			$.get('http://api.pgxn-tester.org/machines', function (data, status, xhr) {
+				for (d in data) {
+					$('#machine-name').append('<option value="' + data[d].name + '">' + data[d].name  + '</option>');
+				}
+			});
+
+			$('#distribution-name').change(function () {
+
+				var optvalue = $('#distribution-name option:selected').val();
+
+				$('#version-number').empty();
+				$('#version-number').append('<option value="">-- all --</option>');
+				$('#version-number').prop('disabled', true);
+
+				if (optvalue != '') {
+
+					$('#version-number').prop('disabled', false);
+
+					$.get('http://api.pgxn-tester.org/distributions/' + optvalue, function (data, status, xhr) {
+						for (d in data.versions) {
+							$('#version-number').append('<option value="' + data.versions[d].version + '">' + data.versions[d].version  + '</option>');
+						}
+					});
+
+				}
+
 			});
 
 			$('#filter-button').click(function () {
@@ -93,19 +160,28 @@
 				filters = {};
 
 				if ($('#distribution-name').val() != '')
-					filters['distribution'] = $('#distribution-name').val();
+					filters['distribution'] = $('#distribution-name option:selected').val();
 
 				if ($('#version-number').val() != '')
-					filters['version'] = $('#version-number').val();
+					filters['version'] = $('#version-number option:selected').val();
 
 				if ($('#distribution-status').val() != '')
-					filters['status'] = $('#distribution-status').val();
+					filters['status'] = $('#distribution-status option:selected').val();
 
 				if ($('#machine-name').val() != '')
-					filters['machine'] = $('#machine-name').val();
+					filters['machine'] = $('#machine-name option:selected').val();
 
 				if ($('#postgres-version').val() != '')
 					filters['pg_version'] = $('#postgres-version').val();
+
+				if ($('#install-result').val() != '')
+					filters['install'] = $('#install-result').val();
+
+				if ($('#load-result').val() != '')
+					filters['load'] = $('#load-result').val();
+
+				if ($('#check-result').val() != '')
+					filters['check'] = $('#check-result').val();
 
 				$.get('http://api.pgxn-tester.org/results', filters, function (data, status, xhr) {
 
