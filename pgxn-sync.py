@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# This script performs a simple sync of users, releases and versions against the PGXN API (so we have locally in the DB).
+# This script performs a simple sync of users, releases and versions against the PGXN API (so we have it locally in the DB).
 
 import argparse
 import httplib
