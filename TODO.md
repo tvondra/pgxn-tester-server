@@ -29,16 +29,6 @@
 * show only supported PostgreSQL versions on the front-page (and add a switch to show all)
 
 
-## Execution of tests
-
-* better dependency / prerequisities handling (currently only PostgreSQL is handled) - this is closely related to the client part
-* somehow handling the supported platforms (e.g. Windows-only extension will fail on Linux, ...)
-* automatic download / build of new PostgreSQL releases
-* skip distributions / versions that were already tested by that animal (i.e. provide list of already performed tests, skip them in the client)
-* allow '--force' in the client, to retest everything (e.g. after fixing a problem on the server configuration, ...)
-* getting additional info about the machines (env variables, uname, dmesg, ...)
-
-
 ## Detection of issues and notifications
 
 * basic analysis of the failed builds, hinting about possible sources of issues (e.g. Makefile placed somewhere else, ...)
@@ -49,20 +39,15 @@
 
 # Documentation
 
-* add instructions on how to operate the client with sufficient security (confine the tests within some sort of container, limit networking ...)
 * improve INSTALL
 
 
 # Miscellaneous
 
 * fix and improve the tests
-* proper configuration (right now it's hardcoded in the main.py file)
-* consider separating the api / ui (right now it's in the same repository etc.)
 * consider using SSL - we're not transmitting anything confidential, but it might protect us against some basic attacks
 * add twitter buttons where appropriate
 * create Twitter account for news on the site, maybe regular updates (and maybe RSS for the same purpose)
 * do a stress-test, to see what needs to be improved
-* the current UI does not really work with PostgreSQL releases
 * a simple 'status' button, people might put onto their websites or whatever (showing status of their extensions, ...) - something like a status button for travis-ci
-* replace the built-in server with a proper production deployment (http://flask.pocoo.org/docs/deploying/) - uwsgi seems like a good option (http://flask.pocoo.org/docs/deploying/uwsgi/)
 * make the 'update-views' (or maybe refresh_views) more clever, by checking whether the timestamp of the last test changed (and do nothing if not)
