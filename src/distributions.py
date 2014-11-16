@@ -76,7 +76,7 @@ class Distribution(Resource):
 							 install_ok, install_error, load_ok, load_error, check_ok, check_error, check_missing
 						FROM distributions d JOIN distribution_versions v ON (d.id = v.dist_id)
 											 LEFT JOIN results_version rv ON (v.id = rv.dist_version_id)
-						WHERE dist_name = %(name)s"""
+						WHERE dist_name = %(name)s ORDER BY version_date DESC"""
 
 	def _extract_prereqs(self, meta):
 
