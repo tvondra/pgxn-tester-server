@@ -78,6 +78,30 @@ Now try to connect to `localhost:6000` and you should see the UI (without
 any data, of course).
 
 
+## Production deployment / Gunicorn
+
+Using the built-in HTTP server is not recommended for production use. There
+are multiple WSGI HTTP servers, written in various languages. I decided to
+use gunicorn [gunicorn][gunicorn] for some reason, but feel free to use
+whatever you want. There's plenty of comparisons on the web.
+
+Starting the gunicorn is simple enough:
+
+    source env/bin/activate
+    pip install gunicorn
+
+    gunicorn --config config.py server:api --daemon
+
+where `api-config.py` contains gunicorn-specific configuration, e.g.:
+
+    bind="127.0.0.1:5000"
+    workers=4
+    accesslog="/var/log/gunicorn/api-access.log"
+    errorlog="/var/log/gunicorn/api-errors.log"
+
+and similarly for the UI. You'll probably want some init scripts, etc.
+
+
 ## Nginx Reverse Proxy
 
 The last step is attaching the two applications to the right virtualhosts
@@ -130,3 +154,4 @@ priority.
 [proxy]: http://en.wikipedia.org/wiki/Reverse_proxy
 [virtualenv]: https://pypi.python.org/pypi/virtualenv
 [docs]: http://virtualenv.readthedocs.org/en/latest/
+[gunicorn]: http://gunicorn.org
