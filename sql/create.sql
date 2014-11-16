@@ -210,6 +210,24 @@ CREATE MATERIALIZED VIEW results_distribution
 
 CREATE UNIQUE INDEX results_distribution_idx ON results_distribution(dist_id);
 
+-- result summary per distribution and last test (from each machine) / last version for each status
+CREATE MATERIALIZED VIEW results_distribution_status
+    AS SELECT
+        vl.dist_id,
+        vl.version_status,
+        COUNT (CASE WHEN install_result = 'ok' THEN 1 END) AS install_ok,
+        COUNT (CASE WHEN install_result = 'error' THEN 1 END) AS install_error,
+        COUNT (CASE WHEN load_result = 'ok' THEN 1 END) AS load_ok,
+        COUNT (CASE WHEN load_result = 'error' THEN 1 END) AS load_error,
+        COUNT (CASE WHEN check_result = 'ok' THEN 1 END) AS check_ok,
+        COUNT (CASE WHEN check_result = 'error' THEN 1 END) AS check_error,
+        COUNT (CASE WHEN check_result = 'missing' THEN 1 END) AS check_missing
+    FROM results_last rl JOIN results r ON (r.id = rl.result_id) -- only last result from each machine/distribution/version
+                         JOIN version_last vl ON (vl.version_id = r.dist_version_id)
+    GROUP BY 1, 2 ORDER BY 1, 2;
+
+CREATE UNIQUE INDEX results_distribution_status_idx ON results_distribution_status(dist_id, version_status);
+
 -- result summary per machine and last test (last version)
 CREATE MATERIALIZED VIEW results_machine
     AS SELECT

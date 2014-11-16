@@ -303,6 +303,7 @@ A single Distribution object, representing a package published on PGXN, possibly
 - name of the distribution
 - user (name of the user)
 - list of versions (version, date of publication, status, prerequisities, summary of results)
+- summary per release status (last version for that status considered)
 
 #### Retrieve a Distribution [GET]
 
@@ -310,7 +311,26 @@ A single Distribution object, representing a package published on PGXN, possibly
     
         {
             "name": "aclexplode", 
-            "user": "alexk", 
+            "user": "alexk",
+            "summary" : {
+                "stable" : {
+                    "check": {
+                        "error": 66, 
+                        "missing": 0, 
+                        "ok": 0
+                    }, 
+                    "date": "2012-09-21T16:51:39", 
+                    "install": {
+                        "error": 11, 
+                        "ok": 66
+                    }, 
+                    "load": {
+                        "error": 0, 
+                        "ok": 66
+                    }, 
+                },
+                ... testing, unstable ...
+            },
             "versions": [
                 {
                     "check": {

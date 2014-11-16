@@ -78,6 +78,13 @@ class Distribution(Resource):
 											 LEFT JOIN results_version rv ON (v.id = rv.dist_version_id)
 						WHERE dist_name = %(name)s ORDER BY version_date DESC"""
 
+	# summary of distribution results (last result for each status)
+	summary_sql = """SELECT version_status,
+							install_ok, install_error, load_ok, load_error, check_ok, check_error, check_missing
+						FROM distributions d JOIN users u ON (d.user_id = u.id)
+											 LEFT JOIN results_distribution_status rd ON (rd.dist_id = d.id)
+						WHERE dist_name = %(name)s"""
+
 	def _extract_prereqs(self, meta):
 
 		'''extract prerequisities (required PostgreSQL versions)'''
@@ -131,8 +138,24 @@ class Distribution(Resource):
 					'check' : {'ok' : v['check_ok'], 'error' : v['check_error'], 'missing' : v['check_missing']}
 				})
 
+		with DB() as (conn, cursor):
+
+			# info about distribution
+			cursor.execute(Distribution.summary_sql, {'name' : name})
+			tmp = cursor.fetchall()
+
+		summary = {}
+		for r in tmp:
+			summary.update({r['version_status'] : {
+									'install' : {'ok' : r['install_ok'], 'error' : r['install_error']},
+									'load' : {'ok' : r['load_ok'], 'error' : r['load_error']},
+									'check' : {'ok' : r['check_ok'], 'error' : r['check_error'], 'missing' : r['check_missing']}}})
+
 		# add info about versions
 		info.update({'versions' : versions})
+
+		# add summary of test results
+		info.update({'summary' : summary})
 
 		return (info)
 
