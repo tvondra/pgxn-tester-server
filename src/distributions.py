@@ -105,6 +105,10 @@ class Distribution(Resource):
 	def get(self, name):
 		'get info about distribution, along with info about author'
 
+		details = True
+		if 'details' in request.args:
+			details = (request.args['details'] != '0')
+
 		with DB() as (conn, cursor):
 
 			# info about distribution
@@ -115,47 +119,46 @@ class Distribution(Resource):
 			if not info:
 				abort(404, message="unknown distribution")
 
-		with DB() as (conn, cursor):
-
-			# list of versions
-			cursor.execute(Distribution.versions_sql, {'name' : name})
-			tmp = cursor.fetchall()
-
-			# no version of the distribution exists -> 404
-			if not tmp:
-				abort(404, message="no versions for the distribution")
-
-		# extract the prerequisities from the meta (but only those related to PostgreSQL)
-		versions = []
-		for v in tmp:
-			versions.append({
-					'version' : v['version'],
-					'prereqs' : self._extract_prereqs(v['meta']),
-					'date' : v['date'],
-					'status' : v['status'],
-					'install' : {'ok' : v['install_ok'], 'error' : v['install_error']},
-					'load' : {'ok' : v['load_ok'], 'error' : v['load_error']},
-					'check' : {'ok' : v['check_ok'], 'error' : v['check_error'], 'missing' : v['check_missing']}
-				})
-
-		with DB() as (conn, cursor):
-
 			# info about distribution
 			cursor.execute(Distribution.summary_sql, {'name' : name})
 			tmp = cursor.fetchall()
 
-		summary = {}
-		for r in tmp:
-			summary.update({r['version_status'] : {
-									'install' : {'ok' : r['install_ok'], 'error' : r['install_error']},
-									'load' : {'ok' : r['load_ok'], 'error' : r['load_error']},
-									'check' : {'ok' : r['check_ok'], 'error' : r['check_error'], 'missing' : r['check_missing']}}})
+			summary = {}
+			for r in tmp:
+				summary.update({r['version_status'] : {
+										'install' : {'ok' : r['install_ok'], 'error' : r['install_error']},
+										'load' : {'ok' : r['load_ok'], 'error' : r['load_error']},
+										'check' : {'ok' : r['check_ok'], 'error' : r['check_error'], 'missing' : r['check_missing']}}})
 
-		# add info about versions
-		info.update({'versions' : versions})
+			# add summary of test results
+			info.update({'summary' : summary})
 
-		# add summary of test results
-		info.update({'summary' : summary})
+			# add per-version details (unless the details are disabled with ?details=0)
+			if details:
+
+				# list of versions
+				cursor.execute(Distribution.versions_sql, {'name' : name})
+				tmp = cursor.fetchall()
+
+				# no version of the distribution exists -> 404
+				if not tmp:
+					abort(404, message="no versions for the distribution")
+
+				# extract the prerequisities from the meta (but only those related to PostgreSQL)
+				versions = []
+				for v in tmp:
+					versions.append({
+							'version' : v['version'],
+							'prereqs' : self._extract_prereqs(v['meta']),
+							'date' : v['date'],
+							'status' : v['status'],
+							'install' : {'ok' : v['install_ok'], 'error' : v['install_error']},
+							'load' : {'ok' : v['load_ok'], 'error' : v['load_error']},
+							'check' : {'ok' : v['check_ok'], 'error' : v['check_error'], 'missing' : v['check_missing']}
+						})
+
+				# add info about versions
+				info.update({'versions' : versions})
 
 		return (info)
 
@@ -185,6 +188,10 @@ class Version(Resource):
 	def get(self, name, version):
 		'get info about distribution, along with info about author'
 
+		details = True
+		if 'details' in request.args:
+			details = (request.args['details'] != '0')
+
 		with DB() as (conn, cursor):
 
 			# info about distribution
@@ -195,22 +202,7 @@ class Version(Resource):
 			if not info:
 				abort(404, message="unknown distribution/version")
 
-			# info about distribution
-			cursor.execute(Version.stats_sql, {'name' : name, 'version' : version})
-			tmp = cursor.fetchall()
-
-			stats = {t['machine'] : [] for t in tmp}
-			for r in tmp:
-				stats[r['machine']].append({
-							'version' : r['pg_version'],
-							'date' : r['date'],
-							'install' : r['install'] or '',
-							'load' : r['load'] or '',
-							'check' : r['check'] or '',
-							'uuid' : r['result_uuid']
-						})
-
-			# fetch only some fields of the META
+			# copy only some fields of the META, and throw-away the rest
 			for key in ['date', 'abstract', 'description']:
 				if key in info:
 					info[key] = info['meta'][key]
@@ -219,9 +211,7 @@ class Version(Resource):
 
 			del info['meta']
 
-			info['stats'] = stats
-
-			# get summary of the results
+			# get summary of the results (comined from all machines / PostgreSQL versions)
 			cursor.execute(Version.summary_sql, {'name' : name, 'version' : version})
 			tmp = cursor.fetchone()
 
@@ -229,5 +219,24 @@ class Version(Resource):
 				info['summary'] = {'install' : {'ok' : tmp['install_ok'], 'error' : tmp['install_error']},
 								   'load' : {'ok' : tmp['load_ok'], 'error' : tmp['load_error']},
 								   'check' : {'ok' : tmp['check_ok'], 'error' : tmp['check_error'], 'missing' : tmp['check_missing']}}
+
+			# detailed statistics (unless detauls=False)
+			if details:
+
+				cursor.execute(Version.stats_sql, {'name' : name, 'version' : version})
+				tmp = cursor.fetchall()
+
+				stats = {t['machine'] : [] for t in tmp}
+				for r in tmp:
+					stats[r['machine']].append({
+								'version' : r['pg_version'],
+								'date' : r['date'],
+								'install' : r['install'] or '',
+								'load' : r['load'] or '',
+								'check' : r['check'] or '',
+								'uuid' : r['result_uuid']
+							})
+
+				info['stats'] = stats
 
 		return (info)

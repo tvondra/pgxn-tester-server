@@ -302,8 +302,9 @@ A single Distribution object, representing a package published on PGXN, possibly
 
 - name of the distribution
 - user (name of the user)
-- list of versions (version, date of publication, status, prerequisities, summary of results)
 - summary per release status (last version for that status considered)
+- list of versions (version, date of publication, status, prerequisities, summary of results)
+- the list of versions may be disabled by adding ?details=0 to the URI
 
 #### Retrieve a Distribution [GET]
 
@@ -401,6 +402,7 @@ A single Version object, representing a version of a package published on PGXN. 
 - status (unstable, testing or stable)
 - summary of results of this version (all machines / PostgreSQL major versions combined)
 - detailed summary of results for this version (from each combination of machine / PostgreSQL major version)
+- the detailed summary may be disabled by adding ?details=0 to the URI
 
 #### Retrieve a Version [GET]
 
