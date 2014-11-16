@@ -200,6 +200,7 @@ A single Machine object, representing a machine performing tests. It has the fol
 - number of distributions tested
 - number of versions tested
 - summary of results (per PostgreSQL major version and version status)
+- list of tested distributions (for each version, there's a list of PostgreSQL minor / full versions from executed tests)
 
 #### Retrieve a Machine [GET]
 
@@ -235,6 +236,26 @@ A single Machine object, representing a machine performing tests. It has the fol
                     ... other version statuses ...
                 },
                 ... other PostgreSQL major versions ...
+            },
+            "tested": {
+                "CyanAudit": {
+                    "0.9.0": {
+                        "major": [
+                            "9.4",
+                            "9.1",
+                            "9.2",
+                            "9.3"
+                        ],
+                        "minor": [
+                            "9.1.13",
+                            "9.4beta1",
+                            "9.2.8",
+                            "9.3.4"
+                        ]
+                    },
+                    ... more versions ...
+                },
+                ...  more distributions ...
             }
         }
 

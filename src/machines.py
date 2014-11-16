@@ -74,6 +74,14 @@ class Machine(Resource):
 						FROM results r JOIN distribution_versions v ON (r.dist_version_id = v.id) JOIN distributions d ON (v.dist_id = d.id) GROUP BY 1
 					) AS s ON (m.id = s.machine_id) WHERE m.name = %(name)s"""
 
+	# list of distributions / versions already tested by this machine (only the last result)
+	results_sql = """SELECT dist_name AS name, version_number AS version, r.pg_version, rl.pg_version AS pg_version_major
+							FROM results_last rl JOIN distribution_versions v ON (rl.dist_version_id = v.id)
+												 JOIN distributions d ON (v.dist_id = d.id)
+												 JOIN results r ON (r.id = rl.result_id)
+												 JOIN machines m ON (r.machine_id = m.id)
+							WHERE m.name = %(name)s"""
+
 	stats_sql = """SELECT
 						pg_version,
 						status,
@@ -94,6 +102,10 @@ class Machine(Resource):
 				abort(404, message="unknown user")
 
 			# list of versions
+			cursor.execute(Machine.results_sql, {'name' : name})
+			results = cursor.fetchall()
+
+			# list of versions
 			cursor.execute(Machine.stats_sql, {'name' : name})
 			tmp = cursor.fetchall()
 
@@ -106,4 +118,23 @@ class Machine(Resource):
 					'check' : {'ok' : r['check_ok'], 'error' : r['check_error'], 'missing' : r['check_missing']},
 				}})
 
-		return ({'info' : info, 'stats' : stats})
+		tested = {}
+		for r in results:
+
+			if r['name'] not in tested:
+				tested.update({r['name'] : {}})
+
+			if r['version'] not in tested[r['name']]:
+				tested[r['name']].update({r['version'] : {'major' : [], 'minor' : []}})
+
+			tested[r['name']][r['version']]['minor'].append(r['pg_version'])
+			tested[r['name']][r['version']]['major'].append(r['pg_version_major'])
+
+
+		for name in tested:
+			for version in tested[name]:
+				tested[name][version]['minor'] = list(set(tested[name][version]['minor']))
+				tested[name][version]['major'] = list(set(tested[name][version]['major']))
+
+
+		return ({'info' : info, 'tested' : tested, 'stats' : stats})
