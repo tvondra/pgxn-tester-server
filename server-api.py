@@ -10,7 +10,7 @@ from flask.ext.restful import Api
 sys.path.append('src')
 
 from db import DB
-import cors
+import cors, jsonp
 
 # create flask application
 app = Flask(__name__)
@@ -25,7 +25,7 @@ DB.init_pool(app.config['DATABASE'])
 api = Api(app)
 
 # CORS / allow calls from all origins (well, especially pgxn-tester.org, but not only)
-api.decorators=[cors.crossdomain(origin='*')]
+api.decorators=[cors.crossdomain(origin='*'), jsonp.support_jsonp]
 
 import index
 import distributions
