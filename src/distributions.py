@@ -177,6 +177,11 @@ class Version(Resource):
 					WHERE dist_name = %(name)s AND version_number = %(version)s
 					ORDER BY m.name, pg_version DESC"""
 
+	summary_sql = """SELECT install_ok, install_error, load_ok, load_error, check_ok, check_error, check_missing
+						FROM results_version rv JOIN distribution_versions dv ON (rv.dist_version_id = dv.id)
+												JOIN distributions d ON (dv.dist_id = d.id)
+					WHERE dist_name = %(name)s AND version_number = %(version)s"""
+
 	def get(self, name, version):
 		'get info about distribution, along with info about author'
 
@@ -215,5 +220,14 @@ class Version(Resource):
 			del info['meta']
 
 			info['stats'] = stats
+
+			# get summary of the results
+			cursor.execute(Version.summary_sql, {'name' : name, 'version' : version})
+			tmp = cursor.fetchone()
+
+			if tmp:
+				info['summary'] = {'install' : {'ok' : tmp['install_ok'], 'error' : tmp['install_error']},
+								   'load' : {'ok' : tmp['load_ok'], 'error' : tmp['load_error']},
+								   'check' : {'ok' : tmp['check_ok'], 'error' : tmp['check_error'], 'missing' : tmp['check_missing']}}
 
 		return (info)

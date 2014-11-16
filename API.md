@@ -399,7 +399,8 @@ A single Version object, representing a version of a package published on PGXN. 
 - version number
 - date of publication
 - status (unstable, testing or stable)
-- summary of results for this version (from each combination of machine / PostgreSQL major version)
+- summary of results of this version (all machines / PostgreSQL major versions combined)
+- detailed summary of results for this version (from each combination of machine / PostgreSQL major version)
 
 #### Retrieve a Version [GET]
 
@@ -411,6 +412,21 @@ A single Version object, representing a version of a package published on PGXN. 
             "description": "", 
             "name": "aclexplode", 
             "status": "stable", 
+            "summary": {
+                "check": {
+                    "error": 0, 
+                    "missing": 0, 
+                    "ok": 18
+                }, 
+                "install": {
+                    "error": 0, 
+                    "ok": 18
+                }, 
+                "load": {
+                    "error": 0, 
+                    "ok": 18
+                }
+            }, 
             "user": "alexk", 
             "version": "1.0.3",
             "stats": {
