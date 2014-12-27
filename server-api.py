@@ -37,19 +37,30 @@ import stats
 api.add_resource(index.Index, '/')
 
 api.add_resource(distributions.DistributionList, '/distributions')
-api.add_resource(distributions.Distribution, 	 '/distributions/<string:name>')
-api.add_resource(distributions.Version, 		 '/distributions/<string:name>/<string:version>')
+api.add_resource(distributions.Distribution,	 '/distributions/<string:name>')
+api.add_resource(distributions.Version,			 '/distributions/<string:name>/<string:version>')
 
-api.add_resource(results.Result,	 			 '/results/<string:rid>')
-api.add_resource(results.ResultList, 			 '/results')
+api.add_resource(results.Result,				 '/results/<string:rid>')
+api.add_resource(results.ResultList,			 '/results')
 
 api.add_resource(users.UserList,				 '/users')
 api.add_resource(users.User,					 '/users/<string:name>')
 
-api.add_resource(machines.MachineList, 			 '/machines')
+api.add_resource(machines.MachineList,			 '/machines')
 api.add_resource(machines.Machine,	 			 '/machines/<string:name>')
 
-api.add_resource(stats.Stats, 					 '/stats')
+api.add_resource(stats.Overview,				 '/stats')
+
+api.add_resource(stats.CurrentTotals,			'/stats/current')
+api.add_resource(stats.CurrentVersions,			'/stats/current/version')
+api.add_resource(stats.CurrentStatus,			'/stats/current/version-status')
+
+api.add_resource(stats.MonthlyTotals,			'/stats/monthly')
+api.add_resource(stats.MonthlyVersions,			'/stats/monthly/version')
+api.add_resource(stats.MonthlyStatus,			'/stats/monthly/version-status')
+
+api.add_resource(stats.ErrorsOverview,			'/stats/errors')
+api.add_resource(stats.ErrorsPerStatus,			'/stats/errors/status')
 
 if __name__ == '__main__':
     app.run()

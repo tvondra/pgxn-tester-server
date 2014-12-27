@@ -1,5 +1,335 @@
 {% extends "base.html" %}
 {% block content %}
-                <p>HIC SVNT LEONES</p>
+
+	<div class="row">
+		<div class="col-md-6">
+			<h2>PostgreSQL Major Versions</h2>
+			<p>Executed tests and tested distribution versions, per PostgreSQL major version.</p>
+			<div id="current-versions" style="height: 300px"></div>
+		</div>
+		<div class="col-md-6">
+			<h2>Test Phases</h2>
+			<p>Number of test results (all distributions and versions, all PostgreSQL major versions).</p>
+			<div id="current-summary" style="height: 300px"></div>
+		</div>
+	</div>
+
+	<div class="row" style="margin-top: 3em">
+		<div class="col-md-6">
+			<h2>Release Status</h2>
+			<p>Test results by distribution release status (and PostgreSQL major version).</p>
+			<div id="current-per-status" style="height: 300px"></div>
+		</div>
+		<div class="col-md-6">
+			<h2>Release Status and Major Version</h2>
+			<p>Test results by phase of the test (and PostgreSQL major version).</p>
+			<div id="current-per-phase" style="height: 300px"></div>
+		</div>
+	</div>
+
+	<div class="row" style="margin-top: 3em">
+		<div class="col-md-12">
+			<h2>Monthly Summary</h2>
+			<p>Test results by month of the distribution release (all PostgreSQL major versions, all distribution versions).</p>
+			<div id="monthly-summary" style="height: 450px"></div>
+		</div>
+	</div>
+
 {% endblock %}
 
+{% block script %}
+
+	<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.categories.js"></script>
+	<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.stack.js"></script>
+	<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.barnumbers.js"></script>
+	<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.tickrotor.js"></script>
+
+	<script type="text/javascript">
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/stats/current', function (data, status, xhr) {
+
+				/* each value as a separate data series */
+				var data = [
+						{data: [["install error", data.install_errors]], color: "#c00"},
+						{data: [["load error", data.load_errors]], color: "orange"},
+						{data: [["check error", data.check_errors]], color: "blue"},
+						{data: [["check missing", data.check_missing]], color: "#ccc"},
+						{data: [["ok", data.ok_count]], color: "green"}
+					];
+
+				$.plot("#current-summary", data, {
+
+					series: {
+
+						bars: {
+							show : true,
+							align: "center",
+							barWidth: 0.75,
+							fill: 0.8,
+							numbers : { show: true, xAlign: 0.5 },
+							lineWidth: 0
+						},
+						stack: true
+
+					},
+
+					xaxis: {
+						mode: "categories",
+						tickLength: 0
+					},
+
+					yaxis: { show: false },
+
+					grid: { borderWidth: 0 },
+
+				});
+			});
+
+		});
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/stats/current/version', function (data, status, xhr) {
+
+				var test_count = [];
+				var version_count = [];
+
+				var install_errors = [];
+				var load_errors = [];
+				var check_errors = [];
+				var check_missing = [];
+				var ok_result = [];
+
+				var labels = [];
+
+				for (i = 0; i < data.length; i++) {
+					labels[i] = [i, data[i]["major_version"]];
+
+					test_count[i] = [i, data[i]["total_count"]];
+					version_count[i] = [i, data[i]["version_count"]];
+
+					install_errors[i] = [i, data[i]["install_errors"]];
+					load_errors[i] = [i, data[i]["load_errors"]];
+					check_errors[i] = [i, data[i]["check_errors"]];
+					check_missing[i] = [i, data[i]["check_missing"]];
+					ok_result[i] = [i, data[i]["ok_count"]];
+				}
+
+				$.plot('#current-versions', [{data: test_count, label: "executed tests"}, {data: version_count, label: "versions tested"}], {
+					series: {
+						bars: {
+							show: true,
+							barWidth: .75,
+							align: "center",
+							fill: 1.0,
+							lineWidth: 0,
+							numbers: {show: true, xAlign: 0.5}
+						}
+					},
+
+					xaxis: {
+						ticks: labels,
+						tickLength: 0
+					},
+
+					yaxis: {
+						show: false,
+						lineWidth: 0,
+					},
+
+					grid: {
+						borderWidth: 0
+					},
+
+					legend: {
+						position: "nw",
+						labelFormatter: function (label, series) {
+							return '<span class="label-item">' + label + '</span>';
+						}
+					}
+
+				});
+
+				$.plot('#current-per-phase', [  {data: install_errors, label: "install errors", color: "#c00"},
+								{data: load_errors, label: "load erros", color: "orange"},
+								{data: check_errors, label: "check errors", color: "blue"},
+								{data: check_missing, label: "check missing", color: "#ccc"},
+								{data: ok_result, label: "success", color: "green"}], {
+
+					series: {
+						bars: {
+							show: true,
+							lineWidth: 0,
+							fill: 0.8,
+							barWidth: .75,
+							align: "center",
+							numbers: {show: true, xAlign: 0.5}
+						},
+						stack: true
+					},
+
+					xaxis: {
+						ticks: labels,
+						tickLength: 0
+						tickLength: 0
+					},
+
+					yaxis: {
+						show: false,
+						lineWidth: 0,
+					},
+
+					grid: {
+						borderWidth: 0
+					},
+
+					legend: {
+						show: true,
+						position: "nw",
+						margin: 5,
+						labelFormatter: function (label, series) {
+							return '<span class="label-item">' + label + '</span>';
+						}
+					}
+
+				});
+
+			});
+
+		});
+
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/stats/current/version-status', function (data, status, xhr) {
+
+				/* each value as a separate data series */
+				var labels = [[0, "install error"], [1, "load error"], [2, "check error"], [3, "check missing"], [4, "success"]];
+
+				var data_stable = [[0, data.stable.install_errors],
+						   [1, data.stable.load_errors],
+						   [2, data.stable.check_errors],
+						   [3, data.stable.check_missing],
+						   [4, data.stable.ok_count]];
+
+				var data_testing = [[0, data.testing.install_errors],
+						   [1, data.testing.load_errors],
+						   [2, data.testing.check_errors],
+						   [3, data.testing.check_missing],
+						   [4, data.testing.ok_count]];
+
+				var data_unstable = [[0, data.unstable.install_errors],
+						   [1, data.unstable.load_errors],
+						   [2, data.unstable.check_errors],
+						   [3, data.unstable.check_missing],
+						   [4, data.unstable.ok_count]];
+
+				$.plot("#current-per-status", [{data: data_stable, label: "stable", color: "green"},
+							{data: data_testing, label: "testing", color: "orange"},
+							{data: data_unstable, label: "unstable", color: "red"}], {
+
+					series: {
+
+						bars: {
+							show : true,
+							align: "center",
+							barWidth: 0.75,
+							fill: 0.8,
+							numbers : { show: true, xAlign: 0.5 },
+							lineWidth: 0
+						},
+						stack: true
+
+					},
+
+					xaxis: {
+						tickLength: 0,
+						ticks: labels
+					},
+
+					yaxis: { show: false },
+
+					grid: { borderWidth: 0 },
+
+					legend: {
+						show: true,
+						position: "ne",
+						margin: 5,
+						labelFormatter: function (label, series) {
+							return '<span class="label-item">' + label + '</span>';
+						}
+					}
+				});
+
+			});
+
+		});
+
+		$(document).ready(function () {
+
+			$.get('http://api.pgxn-tester.org/stats/monthly', function (data, status, xhr) {
+
+				var labels = [];
+
+				var install_errors = [];
+				var load_errors = [];
+				var check_errors = [];
+				var check_missing = [];
+				var ok_results = [];
+
+				for (i = 0; i < data.length; i++) {
+					labels[i] = [i, data[i].month.substr(0,7)];
+					install_errors[i] = [i, data[i].install_errors];
+					load_errors[i] = [i, data[i].load_errors];
+					check_errors[i] = [i, data[i].check_errors];
+					check_missing[i] = [i, data[i].check_missing];
+					ok_results[i] = [i, data[i].ok_count];
+				}
+
+				$.plot("#monthly-summary", [{data: install_errors, label: "install error", color: "#c00"},
+							    {data: load_errors, label: "load error", color: "orange"},
+							    {data: check_errors, label: "check error", color: "blue"},
+							    {data: check_missing, label: "check missing", color: "#ccc"},
+							    {data: ok_results, label: "success", color: "green"}], {
+
+					series: {
+
+						bars: {
+							show : true,
+							barWidth: 0.75,
+							fill: 0.8,
+							align: "center",
+							numbers : { show: true, xAlign: 0.5},
+							lineWidth: 0
+						},
+						stack: true
+
+					},
+
+					xaxis: {
+						tickLength: 30,
+						ticks: labels,
+						rotateTicks: 90,
+					},
+
+					yaxis: { show: false },
+
+					grid: { borderWidth: 0 },
+
+					legend: {
+						labelFormatter: function (label, series) {
+							return '<span class="label-item">' + label + '</span>';
+						}
+					}
+
+				});
+
+			});
+
+		});
+
+	</script>
+
+{% endblock %}

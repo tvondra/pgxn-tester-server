@@ -273,5 +273,8 @@ BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY results_machine;
     REFRESH MATERIALIZED VIEW CONCURRENTLY results_version_details;
     REFRESH MATERIALIZED VIEW CONCURRENTLY results_distribution_status;
+
+    -- now refresh all the stats views (delegated to a separate function)
+    SELECT refresh_stats();
 END;
 $$ LANGUAGE plpgsql;
