@@ -30,6 +30,12 @@
 
 				<p>The API documentation is available <a href="https://github.com/tvondra/pgxn-tester-server/blob/master/API.md">here</a>. It's far from perfect, so let me know if you have questions.</p>
 
+				<h2 class="sub-header">HTTPS</h2>
+
+				<p>Both the API and web UI is available by both HTTP and HTTPS. There's nothing really secret here, so the HTTPS support may seem pointless, but it allows you to query the API from other HTTPS sites easily.</p>
+
+				<p>The certificates are issues by <a href="https://www.cacert.org/">CAcert</a>, a community-driven Certificate Authority issuing certificates for free. The downside is that the CA is not included in common browsers, so you have to install the <a href="https://www.cacert.org/index.php?id=3">root certificate</a> on your own.</p>
+
 				<h2 class="sub-header">Running the tests</h2>
 
 				<p>The best way to participate is to run the testing client, which gives us more data (especially if you're running a unique machine (e.g. operating system different from the other clients). To do that, all you need to do is submit a new machine for approval (TODO), and then configure and run the pgxn-tester-client (LINK).</p>
