@@ -88,7 +88,7 @@
 
 		$(document).ready(function () {
 
-			$.get('http://api.pgxn-tester.org/results/' + uuid, function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/results/' + uuid, function (data, status, xhr) {
 
 				$('#summary .machine').append('<a href="/machines/' + data.machine + '">' + data.machine + '</a>');
 				$('#summary .distribution').append('<a href="/distributions/' + data.dist + '">' + data.dist + '</a>');

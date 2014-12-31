@@ -57,7 +57,7 @@
 
 		$(document).ready(function () {
 
-			$.get('http://api.pgxn-tester.org/distributions/' + distribution + '/' + version, function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/distributions/' + distribution + '/' + version, function (data, status, xhr) {
 
 				$('.page-header').append('<a href="/distributions/' + data.name + '">' + data.name + '</a> ' + data.version);
 

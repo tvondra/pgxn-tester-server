@@ -30,7 +30,7 @@
 	
 		$(document).ready(function () {
 		
-			$.get('http://api.pgxn-tester.org/distributions', function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/distributions', function (data, status, xhr) {
 				for (d in data) {
 					var dist = data[d];
 					var row = $('<tr></tr>')

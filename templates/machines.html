@@ -44,7 +44,7 @@
 
 		$(document).ready(function () {
 
-			$.get('http://api.pgxn-tester.org/machines', function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/machines', function (data, status, xhr) {
 				for (d in data) {
 					var machine = data[d];
 					var row = $('<tr></tr>')

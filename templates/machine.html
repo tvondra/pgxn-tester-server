@@ -61,7 +61,7 @@
 
 		$(document).ready(function () {
 
-			$.get('http://api.pgxn-tester.org/machines/' + machine, function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/machines/' + machine, function (data, status, xhr) {
 				$('#info .is-active').append(data.info.machine_active);
 				$('#info .last-test').append(data.info.last_test_date);
 				$('#info .test-count').append(data.info.tests);

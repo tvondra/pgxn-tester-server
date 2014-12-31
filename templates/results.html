@@ -105,13 +105,13 @@
 
 			reload_results();
 
-			$.get('http://api.pgxn-tester.org/distributions', function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/distributions', function (data, status, xhr) {
 				for (d in data) {
 					$('#distribution-name').append('<option value="' + data[d].name + '">' + data[d].name  + '</option>');
 				}
 			});
 
-			$.get('http://api.pgxn-tester.org/machines', function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/machines', function (data, status, xhr) {
 				for (d in data) {
 					$('#machine-name').append('<option value="' + data[d].name + '">' + data[d].name  + '</option>');
 				}
@@ -129,7 +129,7 @@
 
 					$('#version-number').prop('disabled', false);
 
-					$.get('http://api.pgxn-tester.org/distributions/' + optvalue, function (data, status, xhr) {
+					$.get('//api.pgxn-tester.org/distributions/' + optvalue, function (data, status, xhr) {
 						for (d in data.versions) {
 							$('#version-number').append('<option value="' + data.versions[d].version + '">' + data.versions[d].version  + '</option>');
 						}
@@ -192,7 +192,7 @@
 			
 			tmp_filters['page'] = current_page;
 
-			$.get('http://api.pgxn-tester.org/results', tmp_filters, function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/results', tmp_filters, function (data, status, xhr) {
 
 				$('#results tbody').empty();
 

@@ -48,7 +48,7 @@
 
 		$(document).ready(function () {
 
-			$.get('http://api.pgxn-tester.org/stats/current', function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/stats/current', function (data, status, xhr) {
 
 				/* each value as a separate data series */
 				var data = [
@@ -91,7 +91,7 @@
 
 		$(document).ready(function () {
 
-			$.get('http://api.pgxn-tester.org/stats/current/version', function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/stats/current/version', function (data, status, xhr) {
 
 				var test_count = [];
 				var version_count = [];
@@ -203,7 +203,7 @@
 
 		$(document).ready(function () {
 
-			$.get('http://api.pgxn-tester.org/stats/current/version-status', function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/stats/current/version-status', function (data, status, xhr) {
 
 				/* each value as a separate data series */
 				var labels = [[0, "install error"], [1, "load error"], [2, "check error"], [3, "check missing"], [4, "success"]];
@@ -269,7 +269,7 @@
 
 		$(document).ready(function () {
 
-			$.get('http://api.pgxn-tester.org/stats/monthly', function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/stats/monthly', function (data, status, xhr) {
 
 				var labels = [];
 

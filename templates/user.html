@@ -34,7 +34,7 @@
 
 		$(document).ready(function () {
 
-			$.get('http://api.pgxn-tester.org/users/' + user, function (data, status, xhr) {
+			$.get('//api.pgxn-tester.org/users/' + user, function (data, status, xhr) {
 
 				$('.page-header').append(data.info.name + ' (' + data.info.user + ')');
 
