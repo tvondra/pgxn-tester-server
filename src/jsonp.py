@@ -14,7 +14,7 @@ def support_jsonp(f):
 
 		# sanitize the callback names
 		if callback and not re.match('^pgxn_[a-zA-Z0-9_]+$', str(callback)):
-			callback = False
+			callback = None
 
 		if callback:
 			content = str(callback) + '(' + str(f(*args,**kwargs).data).strip() + ')'
