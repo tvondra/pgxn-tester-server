@@ -275,6 +275,6 @@ BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY results_distribution_status;
 
     -- now refresh all the stats views (delegated to a separate function)
-    SELECT refresh_stats();
+    PERFORM refresh_stats();
 END;
 $$ LANGUAGE plpgsql;
