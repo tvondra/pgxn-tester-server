@@ -9,6 +9,7 @@
 							<tr>
 								<th>user name</th>
 								<th>full name</th>
+								<th>PGXN</th>
 								<th># distributions</th>
 								<th># versions</th>
 								<th style="width: 70px">install</th>
@@ -39,6 +40,7 @@
 					var row = $('<tr></tr>')
 					row.append('<td><a href="/users/' + user.name + '" class="user-link">' + user.name + '</a></td>');
 					row.append('<td><a href="/users/' + user.name + '" class="user-link">' + user.full_name + '</a></td>');
+					row.append('<td><a href="http://pgxn.org/user/' + user.name + '" class="user-link">PGXN</a></td>');
 					row.append('<td>' + user.distributions + '</td>');
 					row.append('<td>' + user.versions + '</td>');
 
