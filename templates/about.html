@@ -68,4 +68,10 @@
 
 				<p>If you need to discuss something about this site, post a message to the <a href="https://groups.google.com/d/forum/pgxn-users">PGXN group</a>. If you need to reach me directly, send me an e-mail at <a href="mailto:tomas@pgaddict.com">tomas@pgaddict.com</a>.</p>
 
+				<h2 class="sub-header">Current machines</h2>
+
+				<p>Currently, the tests are executed on three "machines" running the tests with different compilers (gcc, clang and icc). All those machines run inside a single VM, which is shared with three <a href="http://pgbuildfarm.org">buildfarm</a> animals (magpie, treepie and fulmar).</p>
+
+				<p>The tests run sequentially (in a loop), which means that it may take quite a time before the released distribution is tested, especially if there are commits into multiple PostgreSQL branches.</p>
+
 {% endblock %}
