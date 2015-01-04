@@ -48,6 +48,7 @@ api.add_resource(users.User,					 '/users/<string:name>')
 
 api.add_resource(machines.MachineList,			 '/machines')
 api.add_resource(machines.Machine,	 			 '/machines/<string:name>')
+api.add_resource(machines.MachineQueue,			 '/machines/<string:name>/queue')
 
 api.add_resource(stats.Overview,				 '/stats')
 

@@ -260,6 +260,30 @@ A single Machine object, representing a machine performing tests. It has the fol
         }
 
 
+
+### Machine Queue [/machines/{name}]
+
+A list of distribution versions that need to be tested on a particular machine. Returns a simple array of (name,version) pairs:
+
+- distribution name
+- version number
+
+#### Retrieve a Machine Queue [GET]
+
++ Response 200 (application/json)
+    
+        [
+            {
+                "name": "citext", 
+                "version": "2.0.1"
+            }, 
+            {
+                "name": "superloglog_estimator", 
+                "version": "1.2.2"
+            }
+        ]
+
+
 ### Machines Collection [/machines]
 
 Collection of all Machines, again with a simplified summary of test results.

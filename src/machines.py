@@ -138,3 +138,27 @@ class Machine(Resource):
 
 
 		return ({'info' : info, 'tested' : tested, 'stats' : stats})
+
+class MachineQueue(Resource):
+
+	# list extensions not processed by a machine with a particular name
+	queue_sql = """SELECT
+						d.dist_name AS name,
+						dv.version_number AS version
+					FROM distribution_versions dv JOIN distributions d ON (d.id = dv.dist_id)
+					WHERE dv.id NOT IN (
+						SELECT dist_version_id
+							FROM results r JOIN machines m ON (m.id = r.machine_id)
+							WHERE m.name = %(name)s)
+					ORDER BY dist_name, version_number"""
+
+	def get(self, name):
+		'get info about distribution, along with info about author'
+
+		with DB() as (conn, cursor):
+
+			# info about distribution
+			cursor.execute(MachineQueue.queue_sql, {'name' : name})
+			qlist = cursor.fetchall()
+
+		return (qlist)

@@ -16,5 +16,6 @@ class Index(Resource):
 			'users' : '/users',
 			'user' : '/users/{name}',
 			'machine' : '/machines/{name}',
+			'queue' : '/machines/{name}/queue',
 			'machines' : '/machines',
 		}
