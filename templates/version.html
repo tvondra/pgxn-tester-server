@@ -22,6 +22,10 @@
 								<th>user</th>
 								<td class="user"></td>
 							</tr>
+							<tr>
+								<th>PGXN</th>
+								<td class="pgxn"></td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
@@ -65,6 +69,7 @@
 				$('#info .date').append(data.date);
 				$('#info .status').append(data.status);
 				$('#info .description').append(data.description);
+				$('#info .pgxn').append('<a href="http://pgxn.org/dist/' + data.name + '/' + data.version + '/">PGXN</a>');
 
 				var phases = ['install', 'load', 'check'];
 				

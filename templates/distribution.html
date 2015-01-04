@@ -4,6 +4,21 @@
 				<h1 class="page-header">{{title}}</h1>
 
 				<div class="table-responsive">
+					<table class="table" id="info">
+						<tbody>
+							<tr>
+								<th>user</th>
+								<td class="user"></td>
+							</tr>
+							<tr>
+								<th>PGXN</th>
+								<td class="pgxn"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="table-responsive">
 					<table class="table" id="versions">
 						<thead>
 							<tr>
@@ -34,6 +49,9 @@
 		$(document).ready(function () {
 
 			$.get('//api.pgxn-tester.org/distributions/' + distribution, function (data, status, xhr) {
+
+				$('#info .user').append('<a href="/users/' + data.user + '">' + data.user + '</a>');
+				$('#info .pgxn').append('<a href="http://pgxn.org/dist/' + data.name + '/">PGXN</a>');
 
 				for (d in data.versions) {
 					var row = $('<tr></tr>');
