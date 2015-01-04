@@ -427,6 +427,7 @@ A single Version object, representing a version of a package published on PGXN. 
 - summary of results of this version (all machines / PostgreSQL major versions combined)
 - detailed summary of results for this version (from each combination of machine / PostgreSQL major version)
 - the detailed summary may be disabled by adding ?details=0 to the URI
+- prerequisities of the version (extracted from META.json)
 
 #### Retrieve a Version [GET]
 

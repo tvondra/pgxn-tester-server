@@ -185,6 +185,23 @@ class Version(Resource):
 												JOIN distributions d ON (dv.dist_id = d.id)
 					WHERE dist_name = %(name)s AND version_number = %(version)s"""
 
+	def _extract_prereqs(self, meta):
+
+		'''extract prerequisities (required PostgreSQL versions)'''
+		prereqs = []
+
+		if (meta is None) or ('prereqs' not in meta):
+			return []
+
+		for prereq_type in ['configure', 'build', 'test', 'runtime']:
+			if prereq_type in meta['prereqs']:
+				if 'requires' in meta['prereqs'][prereq_type]:
+					for v in meta['prereqs'][prereq_type]['requires']:
+						prereqs.append({v : meta['prereqs'][prereq_type]['requires'][v]})
+
+		# extract only PostgreSQL-related prerequisities
+		return [v['PostgreSQL'] for v in prereqs if ('PostgreSQL' in v)]
+
 	def get(self, name, version):
 		'get info about distribution, along with info about author'
 
@@ -208,6 +225,8 @@ class Version(Resource):
 					info[key] = info['meta'][key]
 				else:
 					info[key] = ''
+
+			info['prereqs'] = self._extract_prereqs(info['meta'])
 
 			del info['meta']
 
