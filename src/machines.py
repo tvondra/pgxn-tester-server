@@ -2,7 +2,7 @@ import flask
 from flask.ext.restful import Resource, abort, reqparse
 
 from db import DB
-from utils import verify_signature
+from utils import verify_signature, extract_prereqs, check_prereqs
 import uuid
 
 class MachineList(Resource):
@@ -153,60 +153,6 @@ class MachineQueue(Resource):
 							WHERE m.name = %(name)s AND pg_version = %(pgversion)s)
 					ORDER BY dist_name, version_number"""
 
-	def _check_prerequisities(self, pgversion, prereqs):
-		'verifies requirements on PostgreSQL version'
-
-		for prereq in prereqs:
-			tmp = [v.strip() for v in prereq.split(',')]
-			for r in tmp:
-				res = re.match('(>|>=|=|==|<=|<)?(\s+)?([0-9]+\.[0-9]+\.[0-9]+)', r)
-				if res:
-					operator = res.group(1)
-					version = SemVer(res.group(3))
-
-					if (operator is None) or (operator == '>='):
-						if not (pgversion >= version):
-							return False
-					elif (operator == '=') or (operator == '=='):
-						if not (pgversion == version):
-							return False
-					elif (operator == '>'):
-						if not (pgversion > version):
-							return False
-					elif (operator == '>='):
-						if not (pgversion >= version):
-							return False
-					elif (operator == '<'):
-						if not (pgversion < version):
-							return False
-					elif (operator == '<='):
-						if not (pgversion <= version):
-							return False
-					else:
-						print "unknown operator in prerequisity:",r
-
-				else:
-					print "skipping invalid prerequisity :",r
-
-		return True
-
-	def _extract_prereqs(self, meta):
-
-		'''extract prerequisities (required PostgreSQL versions)'''
-		prereqs = []
-
-		if (meta is None) or ('prereqs' not in meta):
-			return []
-
-		for prereq_type in ['configure', 'build', 'test', 'runtime']:
-			if prereq_type in meta['prereqs']:
-				if 'requires' in meta['prereqs'][prereq_type]:
-					for v in meta['prereqs'][prereq_type]['requires']:
-						prereqs.append({v : meta['prereqs'][prereq_type]['requires'][v]})
-
-		# extract only PostgreSQL-related prerequisities
-		return [v['PostgreSQL'] for v in prereqs if ('PostgreSQL' in v)]
-
 	def get(self, name, pgversion):
 		'get info about distribution, along with info about author'
 
@@ -220,8 +166,8 @@ class MachineQueue(Resource):
 		# have to check the prerequisities and remove those incompatible with the pg version
 		results = []
 		for q in qlist:
-			prereqs = self._extract_prereqs(q['meta'])
-			if self._check_prerequisities(pgversion, prereqs):
+			prereqs = extract_prereqs(q['meta'])
+			if check_prereqs(pgversion, prereqs):
 				results.append({'name': q['name'], 'version' : q['version']})
 
 		return (results)

@@ -18,7 +18,7 @@ def result_parser():
 	return result_parser
 
 from db import DB
-from utils import verify_signature
+from utils import verify_signature, extract_prereqs
 import uuid
 
 class DistributionList(Resource):
@@ -85,23 +85,6 @@ class Distribution(Resource):
 											 LEFT JOIN results_distribution_status rd ON (rd.dist_id = d.id)
 						WHERE dist_name = %(name)s"""
 
-	def _extract_prereqs(self, meta):
-
-		'''extract prerequisities (required PostgreSQL versions)'''
-		prereqs = []
-
-		if (meta is None) or ('prereqs' not in meta):
-			return []
-
-		for prereq_type in ['configure', 'build', 'test', 'runtime']:
-			if prereq_type in meta['prereqs']:
-				if 'requires' in meta['prereqs'][prereq_type]:
-					for v in meta['prereqs'][prereq_type]['requires']:
-						prereqs.append({v : meta['prereqs'][prereq_type]['requires'][v]})
-
-		# extract only PostgreSQL-related prerequisities
-		return [v['PostgreSQL'] for v in prereqs if ('PostgreSQL' in v)]
-
 	def get(self, name):
 		'get info about distribution, along with info about author'
 
@@ -149,7 +132,7 @@ class Distribution(Resource):
 				for v in tmp:
 					versions.append({
 							'version' : v['version'],
-							'prereqs' : self._extract_prereqs(v['meta']),
+							'prereqs' : extract_prereqs(v['meta']),
 							'date' : v['date'],
 							'status' : v['status'],
 							'install' : {'ok' : v['install_ok'], 'error' : v['install_error']},
@@ -185,23 +168,6 @@ class Version(Resource):
 												JOIN distributions d ON (dv.dist_id = d.id)
 					WHERE dist_name = %(name)s AND version_number = %(version)s"""
 
-	def _extract_prereqs(self, meta):
-
-		'''extract prerequisities (required PostgreSQL versions)'''
-		prereqs = []
-
-		if (meta is None) or ('prereqs' not in meta):
-			return []
-
-		for prereq_type in ['configure', 'build', 'test', 'runtime']:
-			if prereq_type in meta['prereqs']:
-				if 'requires' in meta['prereqs'][prereq_type]:
-					for v in meta['prereqs'][prereq_type]['requires']:
-						prereqs.append({v : meta['prereqs'][prereq_type]['requires'][v]})
-
-		# extract only PostgreSQL-related prerequisities
-		return [v['PostgreSQL'] for v in prereqs if ('PostgreSQL' in v)]
-
 	def get(self, name, version):
 		'get info about distribution, along with info about author'
 
@@ -226,7 +192,7 @@ class Version(Resource):
 				else:
 					info[key] = ''
 
-			info['prereqs'] = self._extract_prereqs(info['meta'])
+			info['prereqs'] = extract_prereqs(info['meta'])
 
 			del info['meta']
 
